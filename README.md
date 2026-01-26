@@ -17,3 +17,5 @@ Containers and Elements are anchored to `world position` instead of the screen b
 We instead leave screen implementations up to the developers, tools like `Container:UDim2ToCFrame()` and `Cinnamon.Layout.PlaceFromUDim2()` are available for this
 
 This lets Cinnamon be more versetile for more games which might require different use cases
+
+go to [Tutorial](TUTORIAL.md) to learn how to use Cinnamon
