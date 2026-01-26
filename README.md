@@ -1,5 +1,5 @@
-# 3D-UI-framework
-UI3D is a 3D UI framework for more expansive and powerful UI code
+# Cinnamon UI3D
+Cinnamon is a 3D UI framework for more expansive and powerful UI code
 
 This framework aims to give developers more options in how they use 3D user interfaces.
 Implementing features that are completely missing from other 3D UI frameworks.
@@ -14,23 +14,23 @@ UI instances are wrapped around objects called `Elements`
 Elements are created and stored in a `Container` object
 
 Containers and Elements are anchored to `world position` instead of the screen by default.
-We instead leave screen implementations up to the developers, tools like `Container:UDim2ToCFrame()` and `UI3D.Layout.PlaceFromUDim2()` are available for this
+We instead leave screen implementations up to the developers, tools like `Container:UDim2ToCFrame()` and `Cinnamon.Layout.PlaceFromUDim2()` are available for this
 
-This lets UI3D be more versetile for more games which might require different use cases
+This lets Cinnamon be more versetile for more games which might require different use cases
 
 ### how to use
 first create a `Container` object, and use that to create Element objects which hold your UI
 
 ```luau
-local Container : UI3D.UIContainer = UI3D.NewContainer(ScreenGui,CFrameValue)
-local Element : UI3D.Element = Container:NewElement(GuiObject,CFrame,Scale : Vector2)
+local Container : Cinnamon.UIContainer = Cinnamon.NewContainer(ScreenGui,CFrameValue)
+local Element : Cinnamon.Element = Container:NewElement(GuiObject,CFrame,Scale : Vector2)
 ```
 Your Elements will be positioned relative to its container, so you dont have to worry about its exact position.
 
 To destroy an object, simply call `Destroy` and the framework will handle deletion logic for you.
 
 ```luau
-UI3D.Destroy(Element)
+Cinnamon.Destroy(Element)
 ```
 
 you can otherwise use `Container:Clear()` to Cleanup a Container's children
@@ -41,7 +41,7 @@ Container:Clear() -- this will destroy any child object created by this containe
 Containers can also be nested inside eachother, this allows you create reusable components
 
 ```luau
-local function BuildCarousel(Container : UI3D.UIContainer,ItemCount : number,Radius : number,Center : CFrame)
+local function BuildCarousel(Container : Cinnamon.UIContainer,ItemCount : number,Radius : number,Center : CFrame)
     local Carousel = Container:NewContainer(Container.UI,Center)
     for i = 1,ItemCount do
         local NewFrame = Instance.new("Frame",ScreenGui)
@@ -51,8 +51,8 @@ local function BuildCarousel(Container : UI3D.UIContainer,ItemCount : number,Rad
         Carousel:NewElement(NewFrame,CFrame.new(0,0,0),Vector2.new(1,1))
     end
     
-    local Layout = UI3D.Layout.Radial(Carousel.Elements,Center,Radius,0,math.rad(5),Vector3.new(0,1,0))
-    UI3D.Layout.ApplyLayout(InnerContainer.Elements,Layout)
+    local Layout = Cinnamon.Layout.Radial(Carousel.Elements,Center,Radius,0,math.rad(5),Vector3.new(0,1,0))
+    Cinnamon.Layout.ApplyLayout(InnerContainer.Elements,Layout)
 
     return Carousel
 end
