@@ -1,0 +1,113 @@
+local schema = {}
+
+local Package = script.Parent
+local Lookup = require(Package.Lookup)
+
+local PixelsPerStud = 150
+
+schema._SetEnabled = function(self : Lookup.Element,Enabled : boolean?)
+	self.Visible = Enabled
+	self.Instance.SurfaceGui.Enabled = self.Visible
+end
+
+schema.Destroy = function(self : Lookup.Element)
+	if self.Destroyed then return end
+	self.Destroyed = true
+	self.UI.Parent = self.Parent2D
+	self.Instance:Destroy()
+	
+	for _,v in self.Connections do
+		v:Disconnect()
+	end
+	
+	
+	local index = table.find(self.Container.Elements,self)
+	table.remove(self.Container.Elements,index)
+
+	setmetatable(self,nil)
+end
+
+local Init = function(self : Lookup.Element)
+	self.Instance.CanCollide = false
+	self.Instance.CanTouch = false
+	self.Instance.CanQuery = false
+	self.Instance.Anchored = true
+	self.Instance.CastShadow = false
+	self.Instance.Transparency = 1
+	
+	self.Instance.SurfaceGui.Adornee = self.Instance
+	self.Instance.SurfaceGui.AlwaysOnTop = true
+	self.Instance.SurfaceGui.Face = Enum.NormalId.Front
+	self.Instance.SurfaceGui.LightInfluence = 0
+	
+	self.Instance.SurfaceGui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	self.Instance.SurfaceGui.PixelsPerStud = PixelsPerStud
+	
+	self.Instance.SurfaceGui.Active = true
+	
+	local PreviousAbsoluteSize = self.UI.AbsoluteSize
+	
+	local throttle = os.clock()
+	
+	--[[table.insert(self.Connections,{self.UI:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+		local RatioX = self.UI.AbsoluteSize.X / PreviousAbsoluteSize.X
+		local RatioY = self.UI.AbsoluteSize.Y / PreviousAbsoluteSize.Y
+		
+		self.Instance.Size = Vector3.new(
+			self.Instance.Size.X * RatioX,
+			self.Instance.Size.Y * RatioY,
+			1
+		)
+		PreviousAbsoluteSize = self.UI.AbsoluteSize
+		
+	end)})]]
+end
+
+
+return function(Container : Lookup.UIContainer,UI : GuiObject,CFrameValue,Scale)
+	
+	
+	local Element = {}
+	Element.Parent2D = UI.Parent
+	Element.UI = UI
+	Element.Connections = {}
+	
+	Element._Data = {
+		Visible = true
+	}
+	
+	local Display = Instance.new("Part",UI.Parent)
+	local SurfaceGUI = Instance.new("SurfaceGui",Display)
+	
+	Display.Size = Vector3.new(
+		(UI.AbsoluteSize.X/PixelsPerStud) * Scale.X,
+		(UI.AbsoluteSize.Y/PixelsPerStud) * Scale.Y,
+		1
+	)
+
+	Element.UI.Parent = SurfaceGUI
+	Display.CFrame = Container.Origin * (CFrameValue or CFrame.new(0,0,0))
+
+	Element.Instance = Display
+	Element.Container = Container
+	Element.Destroyed = false
+
+	Init(Element)
+	
+	local meta = {__index = function(_,key)
+		return schema[key] or Element._Data[key]
+	end,
+	__newindex = function(Container : Lookup.UIContainer,index,value)
+		if index == "Enabled" then
+			schema._SetEnabled(Container,value)
+		end
+
+		Element._Data[index] = value
+	end
+	}
+	
+	
+	table.insert(Container.Elements,Element)
+
+	return setmetatable(Element,meta) :: Lookup.Element
+end
