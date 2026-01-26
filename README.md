@@ -1,4 +1,4 @@
-# Cinnamon UI3D
+# Cinnamon 3D UI
 Cinnamon is a 3D UI framework for more expansive and powerful UI code
 
 This framework aims to give developers more options in how they use 3D user interfaces.
