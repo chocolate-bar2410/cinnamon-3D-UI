@@ -7,7 +7,7 @@ Implementing features that are completely missing from other 3D UI frameworks.
 This is achieved with:
 - Support for Animations (Tweens/Bezier Curves/Springs/Oscillators)
 - Layouts
-- Tree based heirarchy
+- Tree based hierarchy
 - World anchored UI
 
 UI instances are wrapped around objects called `Elements`
