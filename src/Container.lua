@@ -40,7 +40,7 @@ local NewContainer = function(ScreenGui :ScreenGui,Origin)
 end
 
 Schema.NewContainer = function(self : Lookup.UIContainer,ScreenGui : ScreenGui, Origin : CFrame)
-	local Container = NewContainer(ScreenGui,Origin)
+	local Container = NewContainer(ScreenGui,self.Origin * Origin)
 	
 	table.insert(self.Children,Container)
 	
