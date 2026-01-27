@@ -1,5 +1,5 @@
 # how to use
-first create a `Container` object, and use that to create Element objects which hold your UI
+first create a `Container` object, and use that to create `Element` objects which hold your UI
 
 ```luau
 local Container : Cinnamon.UIContainer = Cinnamon.NewContainer(ScreenGui,CFrameValue)
