@@ -22,7 +22,7 @@ export type UIContainer = UI3D_Object & {
 	Elements : {Element},
 	Children : {UIContainer},
 	
-	NewElement : (UIContainer,UI : GuiObject,CFrame,Size : Vector2) -> Element,
+	NewElement : (UIContainer,UI : GuiObject,CFrame,Size : Vector2,Face : Enum.NormalId) -> Element,
 	Clear : (UIContainer) -> nil,
 	UDim2ToCFrame : (UIContainer,Position : UDim2,ViewPortSize : Vector2,DisplayDistance : number) -> CFrame,
 	
