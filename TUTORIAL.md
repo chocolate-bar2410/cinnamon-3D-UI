@@ -3,7 +3,7 @@ first create a `Container` object, and use that to create Element objects which 
 
 ```luau
 local Container : Cinnamon.UIContainer = Cinnamon.NewContainer(ScreenGui,CFrameValue)
-local Element : Cinnamon.Element = Container:NewElement(GuiObject,CFrame,Scale : Vector2)
+local Element : Cinnamon.Element = Container:NewElement(GuiObject,CFrame,Scale,Face)
 ```
 Your Elements will be positioned relative to its container, so you dont have to worry about its exact position.
 
