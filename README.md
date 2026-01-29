@@ -10,15 +10,26 @@ This is achieved with:
 - Tree based hierarchy
 - World anchored UI
 
-UI instances are wrapped around objects called `Elements`
-Elements are created and stored in a `Container` object
-
-Containers and Elements are anchored to `world position` instead of the screen by default.
-We instead leave screen implementations up to the developers, tools like `Container:UDim2ToCFrame()` and `Cinnamon.Layout.PlaceFromUDim2()` are available for this
-
 This lets Cinnamon be more versatile for more games which might require different use cases
 
+Cinnamon is good for:
+- 3D menus systems
+- level UIs
+- 3d VFX
+and much more
+
 go to [Tutorial](TUTORIAL.md) to learn how to use Cinnamon
+if you want to see more updates feel free to contribute and star the project
+
+# how to install
+1. go to [Releases](https://github.com/chocolate-bar2410/cinnamon-3D-UI/releases) and download the latest release's `.rbxm` file
+2. insert in a place the client can access like `replicated storage`
+3. require it in your main script
+```luau
+local Cinnamon = require(path.to.library)
+```
+
+if you're using rojo you can also import it using the .zip file
 
 # examples
 https://www.youtube.com/watch?v=4l6erobTdBM
