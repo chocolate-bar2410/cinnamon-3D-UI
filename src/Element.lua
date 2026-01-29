@@ -64,7 +64,7 @@ local Init = function(self : Lookup.Element,Face : Enum.NormalId)
 end
 
 
-return function(Container : Lookup.UIContainer,UI : GuiObject,CFrameValue,Scale,Face : Enum.NormalId)
+return function(Container : Lookup.UIContainer,UI : GuiObject,CFrameValue,Resolution,Face : Enum.NormalId)
 	Face = Face or Enum.NormalId.Back
 
 	local Element = {}
@@ -80,8 +80,8 @@ return function(Container : Lookup.UIContainer,UI : GuiObject,CFrameValue,Scale,
 	local SurfaceGUI = Instance.new("SurfaceGui",Display)
 	
 	Display.Size = Vector3.new(
-		(UI.AbsoluteSize.X/PixelsPerStud) * Scale.X,
-		(UI.AbsoluteSize.Y/PixelsPerStud) * Scale.Y,
+		((Resolution.X * UI.Size.X.Scale) + UI.Size.X.Offset) / PixelsPerStud,
+		((Resolution.Y * UI.Size.Y.Scale) + UI.Size.Y.Offset) / PixelsPerStud,
 		1
 	)
 
