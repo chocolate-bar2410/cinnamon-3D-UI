@@ -3,7 +3,7 @@ first create a `Container` object, and use that to create `Element` objects whic
 
 ```luau
 local Container : Cinnamon.UIContainer = Cinnamon.NewContainer(ScreenGui,CFrameValue)
-local Element : Cinnamon.Element = Container:NewElement(GuiObject,CFrame,Scale,Face)
+local Element : Cinnamon.Element = Container:NewElement(GuiObject,CFrame,Resolution,Face)
 ```
 Your Elements will be positioned relative to its container, so you dont have to worry about its exact position.
 
@@ -28,7 +28,7 @@ local function BuildCarousel(Container : Cinnamon.UIContainer,ItemCount : number
         NewFrame.Name = string.char(64 + i)
         NewFrame.Size = UDim2.fromScale(1,1)
         NewFrame.BackgroundColor3 = Color3.new(1,1,1)
-        Carousel:NewElement(NewFrame,CFrame.new(0,0,0),Vector2.new(1,1))
+        Carousel:NewElement(NewFrame,CFrame.new(0,0,0),Vector2.new(800,600))
     end
     
     local Layout = Cinnamon.Layout.Radial(Carousel.Elements,Center,Radius,0,math.rad(5),Vector3.new(0,1,0))
