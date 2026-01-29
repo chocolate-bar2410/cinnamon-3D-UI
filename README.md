@@ -19,3 +19,6 @@ We instead leave screen implementations up to the developers, tools like `Contai
 This lets Cinnamon be more versatile for more games which might require different use cases
 
 go to [Tutorial](TUTORIAL.md) to learn how to use Cinnamon
+
+# examples
+https://www.youtube.com/watch?v=4l6erobTdBM
