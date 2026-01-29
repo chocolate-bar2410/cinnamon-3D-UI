@@ -16,7 +16,8 @@ Cinnamon is good for:
 - 3D menus systems
 - level UIs
 - 3d VFX
-and much more
+
+and alot more
 
 go to [Tutorial](TUTORIAL.md) to learn how to use Cinnamon
 if you want to see more updates feel free to contribute and star the project
