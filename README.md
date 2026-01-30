@@ -24,8 +24,8 @@ if you want to see more updates feel free to contribute and star the project
 
 # how to install
 1. go to [Releases](https://github.com/chocolate-bar2410/cinnamon-3D-UI/releases) and download the latest release's `.rbxm` file
-2. insert in a place the client can access like `replicated storage`
-3. require it in your main script
+2. insert in a place the client can access like `ReplicatedStorage`
+3. require it in a local script
 ```luau
 local Cinnamon = require(path.to.library)
 ```
