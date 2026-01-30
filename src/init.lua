@@ -3,9 +3,14 @@ local ContainerIndex = {}
 local Container = require(script.Container)
 local Animation = require(script.Animation)
 local Lookup = require(script.Lookup)
+local DebugRenderer = require(script.DebugRenderer)
 
+local RunService = game:GetService("RunService")
 
-game["Run Service"]:BindToRenderStep("AnimationUpdate",Enum.RenderPriority.Last.Value + 2,Animation.Update)
+RunService:BindToRenderStep("Cinnamon_AnimationUpdate",Enum.RenderPriority.Last.Value + 2,function(d_time)
+	Animation.Update(d_time) -- [1] Animations
+	DebugRenderer.Update() -- [2] Debug renderer
+end)
 
 export type Element = Lookup.Element
 export type UIContainer = Lookup.UIContainer
@@ -30,7 +35,7 @@ return {
 		if not UI3D_Object.Destroy then return end
 		UI3D_Object:Destroy()
 	end,
-	Layout = require(script.Layout)
+	Layout = require(script.Layout),
 }
 
 

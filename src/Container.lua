@@ -4,23 +4,24 @@ local Package = script.Parent
 local Element = require(Package.Element)
 local Lookup = require(Package.Lookup)
 
+local DebugRenderer = require(Package.DebugRenderer)
+
 local Schema = {}
 
 Schema.NewElement = Element
 
 local NewContainer = function(ScreenGui :ScreenGui,Origin)
-	
-	
 	local Container = {}
 	Container.UI = ScreenGui
 	Container.Elements = {}
 	Container.Children = {}
 	Container.Destroyed = false
+	Container.Type = "Container"
 	Container.Data = {
 		Enabled = true,
-		Origin = Origin or CFrame.new(0,0,0)
+		Origin = Origin or CFrame.new(0,0,0),
+		Debug = false,
 	}
-	
 	
 	local meta = {__index = function(_,key)
 		return Schema[key] or Container.Data[key]
@@ -30,6 +31,12 @@ local NewContainer = function(ScreenGui :ScreenGui,Origin)
 			Schema._SetEnabled(Container,value)
 		elseif index == "Origin" then
 			Schema._SetOrigin(Container,value)
+		elseif index == "Debug" then
+			if value then
+				DebugRenderer.DebugContainer(Container)
+			else
+				DebugRenderer.Remove(Container)
+			end
 		end
 		
 		Container.Data[index] = value
@@ -51,8 +58,9 @@ end
 
 Schema._SetEnabled = function(self : Lookup.UIContainer,Enabled)
 	for _,Element in self.Elements do
-		Element.Enabled = true
+		Element.Enabled = Enabled
 	end
+
 	for _,Container in self.Children do
 		Container.Enabled = Enabled
 	end

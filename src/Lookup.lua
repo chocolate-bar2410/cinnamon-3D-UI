@@ -1,19 +1,21 @@
-
 export type UI3D_Object = {
 	Destroyed : boolean,
 	Destroy : (UI3D_Object) -> nil,
 	Enabled : boolean,
+	Debug : boolean,
+	Type : "Container" | "Element"
 }
 
 export type Element = UI3D_Object & {
 	Instance : Part & {
 		SurfaceGui : SurfaceGui
 	},
+	Type : "Element",
+
 	UI : GuiObject,
 	Container : UIContainer,
 	Connections : {RBXScriptConnection},
-	Parent2D : GuiObject
-
+	Parent2D : GuiObject,
 }
 
 export type UIContainer = UI3D_Object & {
@@ -21,7 +23,8 @@ export type UIContainer = UI3D_Object & {
 	Origin : CFrame,
 	Elements : {Element},
 	Children : {UIContainer},
-	
+	Type : "Container",
+
 	NewElement : (UIContainer,UI : GuiObject,CFrame,Size : Vector2,Face : Enum.NormalId) -> Element,
 	Clear : (UIContainer) -> nil,
 	UDim2ToCFrame : (UIContainer,Position : UDim2,ViewPortSize : Vector2,DisplayDistance : number) -> CFrame,

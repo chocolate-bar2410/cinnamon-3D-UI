@@ -3,10 +3,12 @@ local schema = {}
 local Package = script.Parent
 local Lookup = require(Package.Lookup)
 
+local DebugRenderer = require(Package.DebugRenderer)
+
 local PixelsPerStud = 150
 
 schema._SetEnabled = function(self : Lookup.Element,Enabled : boolean)
-	self.Enabled = Enabled
+	self._Data.Enabled = Enabled
 	self.Instance.SurfaceGui.Enabled = self.Enabled
 end
 
@@ -71,9 +73,11 @@ return function(Container : Lookup.UIContainer,UI : GuiObject,CFrameValue,Resolu
 	Element.Parent2D = UI.Parent
 	Element.UI = UI
 	Element.Connections = {}
-	
+	Element.Type = "Element"
+
 	Element._Data = {
-		Enabled = true
+		Enabled = true,
+		Debug = false
 	}
 	
 	local Display = Instance.new("Part",UI.Parent)
@@ -100,6 +104,12 @@ return function(Container : Lookup.UIContainer,UI : GuiObject,CFrameValue,Resolu
 	__newindex = function(Container : Lookup.UIContainer,index,value)
 		if index == "Enabled" then
 			schema._SetEnabled(Element,value)
+		elseif index == "Debug" then
+			if value then
+				DebugRenderer.DebugElement(Element)
+			else
+				DebugRenderer.Remove(Element)
+			end
 		end
 
 		Element._Data[index] = value
