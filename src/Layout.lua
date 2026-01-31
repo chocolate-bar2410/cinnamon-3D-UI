@@ -46,15 +46,16 @@ module.Radial = function(Elements : {Lookup.Element},Origin : CFrame,Distance: n
 	return result
 end
 
-module.List = function(Elements : {Lookup.Element},Origin,LookDirection,Direction : Vector3,ItemsUntilWrap,Padding)
+module.List = function(Elements : {Lookup.Element},Origin,Direction,UpDirection : Vector3,ItemsUntilWrap,Padding)
 	local result = {}
-	local Start = CFrame.new(Origin.Position,Origin.Position + LookDirection)
-
-	LookDirection = LookDirection.Unit
 	Direction = Direction.Unit
+	UpDirection = UpDirection.Unit
 	Padding = Padding or 0
 
-	local Up = Direction:Cross(LookDirection).Unit
+	local Start = CFrame.lookAt(Origin.Position, Origin.Position + Direction,-UpDirection)
+
+	local Right = Start.RightVector
+	local Down = -Start.UpVector
 
 	local row = 0
 
@@ -68,10 +69,10 @@ module.List = function(Elements : {Lookup.Element},Origin,LookDirection,Directio
 		Tallest = math.max(Tallest,Element.Instance.Size.Y)
 
 		RowOffset += Element.Instance.Size.X / 2
-		local Offset = Up * RowOffset + Direction * ColumnOffset
+		local Offset = Right * RowOffset + Down * ColumnOffset
 
 		local WorldPos = Start.Position + Offset
-		result[i] = CFrame.new(WorldPos, WorldPos + LookDirection)
+		result[i] = Start + Offset
 
 		RowOffset += Element.Instance.Size.X / 2 + Padding
 
