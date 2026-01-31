@@ -165,7 +165,8 @@ local QuadraticBezierArcLength = function(Origin, P1, Goal, t)
     return length
 end
 
-module.QuadBezier = function(Elements : {Lookup.Element}, Origin : CFrame,P1 : CFrame,Goal : CFrame)
+module.QuadBezier = function(Elements : {Lookup.Element}, Origin : CFrame,P1 : CFrame,Goal : CFrame, Padding : number)
+	Padding = Padding or 0
 	local result = {}
 	local TotalLength = QuadraticBezierArcLength(Origin.Position, P1.Position, Goal.Position, 1)
 
@@ -173,9 +174,9 @@ module.QuadBezier = function(Elements : {Lookup.Element}, Origin : CFrame,P1 : C
 	local D_length = 0
 
 	for i,Element in Elements do
-		D_length = Element.Instance.Size.X * 2 / TotalLength
 		CurrentTimePosition += D_length
-		print(D_length)
+		D_length = (Element.Instance.Size.X * 2 + Padding) / TotalLength
+		
 		local Position,Tangent = QuadraticBezier(Origin.Position, P1.Position, Goal.Position, CurrentTimePosition)
 		local WorldUp = Vector3.yAxis
 
@@ -188,10 +189,7 @@ module.QuadBezier = function(Elements : {Lookup.Element}, Origin : CFrame,P1 : C
 
 
 		result[i] = CFrame.fromMatrix(Position,Tangent,up,right)
-
-		
 	end
-
 
 	return result
 end
