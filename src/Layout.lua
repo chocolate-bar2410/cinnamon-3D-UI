@@ -22,6 +22,11 @@ module.Radial = function(Elements : {Lookup.Element},Origin : CFrame,Distance: n
 		local HalfWidth = (Element.UI.AbsoluteSize.X / Element.Instance.SurfaceGui.PixelsPerStud) / 2
 		local D_angle = math.atan(HalfWidth / Distance)
 		
+		if CurrentAngle + 2 * D_angle + Padding > 2 * math.pi then
+			warn("overfill: Added too many elements to radial layout")
+			return result
+		end
+
 		CurrentAngle += D_angle
 		
 		local Rotation = CFrame.fromAxisAngle(Axis,CurrentAngle)
@@ -41,23 +46,56 @@ module.Radial = function(Elements : {Lookup.Element},Origin : CFrame,Distance: n
 	return result
 end
 
-module.List = function(Elements : {Lookup.Element},Origin,Direction : Vector3,Padding)
-	
-	local result : {CFrame} = {}
-	
-	for i,Element in ipairs(Elements) do
-		local Width = (Element.UI.AbsoluteSize.X / Element.Instance.SurfaceGui.PixelsPerStud)
-		result[i] = Origin * Direction * ((i - 1) * (Width + Padding))
-		
-		result[i] = CFrame.new(result[i].Position,result[i].Position + Direction)
+module.List = function(Elements : {Lookup.Element},Origin,LookDirection,Direction : Vector3,ItemsUntilWrap,Padding)
+	local result = {}
+	local Start = CFrame.new(Origin.Position,Origin.Position + LookDirection)
+
+	LookDirection = LookDirection.Unit
+	Direction = Direction.Unit
+	Padding = Padding or 0
+
+	local Up = Direction:Cross(LookDirection).Unit
+
+	local row = 0
+
+	local RowOffset = 0
+	local ColumnOffset = 0
+
+	local Tallest = 0
+
+	for i, Element in ipairs(Elements) do
+		row += 1
+		Tallest = math.max(Tallest,Element.Instance.Size.Y)
+
+		RowOffset += Element.Instance.Size.X / 2
+		local Offset = Up * RowOffset + Direction * ColumnOffset
+
+		local WorldPos = Start.Position + Offset
+		result[i] = CFrame.new(WorldPos, WorldPos + LookDirection)
+
+		RowOffset += Element.Instance.Size.X / 2 + Padding
+
+		if ItemsUntilWrap > 0 and row > ItemsUntilWrap then
+			row = 0
+			RowOffset = 0
+
+			ColumnOffset += Tallest + Padding
+			Tallest = 0
+		end
+
 	end
-	
 	
 	return result
 end
 
-module.Grid = function(Elements : {Lookup.Element}, Origin : CFrame, LookDirection, RowSize, ColumnSize, Padding : Vector2)
+module.Grid = function(Elements : {Lookup.Element}, Origin : CFrame, LookDirection : Vector3, RowSize, ColumnSize, Padding : Vector2)
 	local result = {}
+	
+	if #Elements > RowSize * ColumnSize then 
+		warn(`overfill: Tried to more than {RowSize * ColumnSize} Elements to a {RowSize} x {ColumnSize} grid`) 
+		return 
+	end
+
 	local Start = CFrame.new(Origin.Position, LookDirection)
 
 	LookDirection = LookDirection.Unit
