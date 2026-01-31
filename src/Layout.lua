@@ -46,13 +46,18 @@ module.Radial = function(Elements : {Lookup.Element},Origin : CFrame,Distance: n
 	return result
 end
 
-module.List = function(Elements : {Lookup.Element},Origin,Direction,UpDirection : Vector3,ItemsUntilWrap,Padding)
+module.List = function(Elements : {Lookup.Element},Origin,FillDirection,UpDirection : Vector3,ItemsUntilWrap,Padding)
 	local result = {}
-	Direction = Direction.Unit
+	FillDirection = FillDirection.Unit
 	UpDirection = UpDirection.Unit
 	Padding = Padding or 0
 
-	local Start = CFrame.lookAt(Origin.Position, Origin.Position + Direction,-UpDirection)
+	if math.abs(UpDirection:Dot(FillDirection)) > 0.99 then
+		warn("Fill direction and Up direction are on the same axis")
+		return result
+	end
+
+	local Start = CFrame.lookAt(Origin.Position, Origin.Position + FillDirection,-UpDirection)
 
 	local Right = Start.RightVector
 	local Down = -Start.UpVector
@@ -71,7 +76,6 @@ module.List = function(Elements : {Lookup.Element},Origin,Direction,UpDirection 
 		RowOffset += Element.Instance.Size.X / 2
 		local Offset = Right * RowOffset + Down * ColumnOffset
 
-		local WorldPos = Start.Position + Offset
 		result[i] = Start + Offset
 
 		RowOffset += Element.Instance.Size.X / 2 + Padding
