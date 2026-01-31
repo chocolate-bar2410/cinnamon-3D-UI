@@ -3,6 +3,8 @@ local module = {}
 local Package = script.Parent
 local Lookup = require(Package.Lookup)
 
+
+
 module.ApplyLayout = function(Elements : {Lookup.Element},Layout : {CFrame})
 	for i,Element in Elements do
 		if not Layout[i] then continue end
@@ -123,6 +125,76 @@ module.Grid = function(Elements : {Lookup.Element}, Origin : CFrame, LookDirecti
 	return result
 end
 
+local CubicBezier_CFrame = function(Origin : CFrame,P1 : CFrame,P2 : CFrame,Goal : CFrame,t)
+	local A = Origin:Lerp(P1,t)
+	local B = P1:Lerp(P2,t)
+	local C = P2:Lerp(Goal,t)
+
+	local D = A:Lerp(B,t)
+	local E = B:Lerp(C,t)
+
+	return D:Lerp(E,t)
+end
+
+local QuadraticBezier = function(Origin : Vector3,P1 : Vector3,Goal : Vector3,t)
+	local Position = (1 - t) ^2 * Origin + 2 * (1 - t) * t * P1 + t^2 * Goal
+	local tangent = 2 * (1 - t) * (P1 - Origin) + 2 * t * (Goal - P1)
+
+	return Position,tangent.Unit
+end
+
+local QuadraticBezierArcLength = function(Origin, P1, Goal, t)
+    local A = 2 * (Goal - 2*P1 + Origin)
+    local B = 2 * (P1 - Origin)
+    
+    local a = A:Dot(A)
+    local b = A:Dot(B)
+    local c = B:Dot(B)
+    
+    if a == 0 then
+        return math.sqrt(c) * t
+    end
+
+    local sqrtQuadratic = function(u)
+        return math.sqrt(a*(u^2) + 2*b*u + c)
+    end
+
+    local length = ((b + a*t) * sqrtQuadratic(t) - b * sqrtQuadratic(0)) / a
+	length = length + ((c*a - b*b)/(a^(3/2))) * math.log( (math.sqrt(a) * sqrtQuadratic(t) + a*t + b) / (math.sqrt(a) * sqrtQuadratic(0) + b) )
+
+    return length
+end
+
+module.QuadBezier = function(Elements : {Lookup.Element}, Origin : CFrame,P1 : CFrame,Goal : CFrame)
+	local result = {}
+	local TotalLength = QuadraticBezierArcLength(Origin.Position, P1.Position, Goal.Position, 1)
+
+	local CurrentTimePosition = 0
+	local D_length = 0
+
+	for i,Element in Elements do
+		D_length = Element.Instance.Size.X * 2 / TotalLength
+		CurrentTimePosition += D_length
+		print(D_length)
+		local Position,Tangent = QuadraticBezier(Origin.Position, P1.Position, Goal.Position, CurrentTimePosition)
+		local WorldUp = Vector3.yAxis
+
+		if math.abs(Tangent:Dot(WorldUp)) > 0.99 then
+			WorldUp = Vector3.xAxis
+		end
+
+		local right = Tangent:Cross(WorldUp).Unit
+		local up = right:Cross(Tangent).Unit
+
+
+		result[i] = CFrame.fromMatrix(Position,Tangent,up,right)
+
+		
+	end
+
+
+	return result
+end
 
 module.PlaceFromUDim2 = function(Elements : {Lookup.Element},DisplayDistance)
 	local result = {}
