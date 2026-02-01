@@ -17,29 +17,21 @@ local NewContainer = function(ScreenGui :ScreenGui,Origin)
 	Container.Children = {}
 	Container.Destroyed = false
 	Container.Type = "Container"
-	Container.Data = {
+	Container._Data = {
 		Enabled = true,
 		Origin = Origin or CFrame.new(0,0,0),
 		Debug = false,
 	}
 	
 	local meta = {__index = function(_,key)
-		return Schema[key] or Container.Data[key]
+		return Schema[key] or Container._Data[key]
 	end,
 	__newindex = function(Container : Lookup.UIContainer,index,value)
-		if index == "Enabled" then
-			Schema._SetEnabled(Container,value)
-		elseif index == "Origin" then
-			Schema._SetOrigin(Container,value)
-		elseif index == "Debug" then
-			if value then
-				DebugRenderer.DebugContainer(Container)
-			else
-				DebugRenderer.Remove(Container)
-			end
-		end
+		if Schema[`_Set{index}`] then
+            Schema[`_Set{index}`](Container,value)
+        end
 		
-		Container.Data[index] = value
+		Container._Data[index] = value
 	end
 	}
 	
@@ -64,6 +56,14 @@ Schema._SetEnabled = function(self : Lookup.UIContainer,Enabled)
 	for _,Container in self.Children do
 		Container.Enabled = Enabled
 	end
+end
+
+Schema._SetDebug = function(self : Lookup.UIContainer,Enabled)
+    if Enabled then
+        DebugRenderer.DebugContainer(self)
+    else
+        DebugRenderer.Remove(self)
+    end
 end
 
 --// memory management

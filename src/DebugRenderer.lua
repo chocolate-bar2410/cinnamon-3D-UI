@@ -8,6 +8,7 @@ local Outlines = {}
 
 local DrawnContainers = {}
 local DrawnElements = {}
+local DrawnScreenContainers = {}
 
 module.DebugFolder = nil
 
@@ -19,13 +20,15 @@ local NewDebugFolder = function()
     module.DebugFolder.Name = "__CINNAMON_DEBUG"
 end
 
-local GetCFramePropertyValue = function(Target : BasePart | Lookup.Element | Lookup.UIContainer)
+local GetCFramePropertyValue = function(Target : BasePart | Lookup.UIContainer | Lookup.Element | Lookup.ScreenContainer)
 	if typeof(Target) == "BasePart" then return Target.CFrame end
 	
 	if typeof(Target) ~= "table" then return end
 	
 	if Target.Type == "Container" then
         return Target.Origin
+    elseif Target.Type == "ScreenContainer" then
+        return Target.WorldCFrame
     elseif Target.Type == "Element" then
         return Target.Instance.CFrame
     else
@@ -112,6 +115,12 @@ module.DrawContainer = function(Container : Lookup.UIContainer)
     end    
 end
 
+module.DrawScreenContainer = function(Container : Lookup.ScreenContainer)
+    for _,Element in Container.Elements do
+        module.DrawElement(Element)
+    end   
+end
+
 module.Update = function()
     for i,Line in Lines do
         module.DrawLine(i)
@@ -125,6 +134,9 @@ module.Update = function()
         module.DrawElement(Element)
     end
 
+    for _,ScreenContainer in DrawnScreenContainers do
+        module.DrawScreenContainer(ScreenContainer)
+    end
 
 end    
 
@@ -156,6 +168,16 @@ module.Remove = function(Name)
         end 
     end
     
+     if DrawnScreenContainers[Name] then
+       DrawnScreenContainers[Name] = nil
+
+       if typeof(Name) ~= "table" or Name.Type ~= "ScreenContainer" then return end
+
+        for _,Element in Name.Elements do
+           module.Remove(Element)
+        end
+
+    end
 end
 
 module.DebugElement = function(Element : Lookup.Element)
@@ -172,6 +194,14 @@ module.DebugContainer = function(Container : Lookup.UIContainer)
     for _,ChildContainer in Container.Children do
         table.insert(DrawnContainers,ChildContainer)
     end 
+end
+
+module.DebugScreenContainer = function(ScreenContainer : Lookup.ScreenContainer)
+    table.insert(DrawnScreenContainers,ScreenContainer)
+
+    for _,Element in ScreenContainer.Elements do
+        table.insert(DrawnElements,Element)
+    end
 
 end
 

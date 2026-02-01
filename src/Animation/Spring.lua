@@ -1,15 +1,9 @@
 local module = {}
 
-local LerpFunction = function(a,b,t)
-	return a + t * (b - a)
-end
-
-
 module.Update = function(self,d_time)
 	if not self.Instance then return end
 	
 	local Property = self.Property
-	local TypeName = typeof(self.Instance[Property])
 	
 	local scaled_time = d_time * self.Speed
 	
