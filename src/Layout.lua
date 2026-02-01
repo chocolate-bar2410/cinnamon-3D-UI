@@ -22,7 +22,7 @@ module.Radial = function(Elements : {Lookup.Element},Props : {
 	local CurrentAngle = (Props.StartAngle or 0) - Props.Padding
 	local Padding = Props.Padding or 0
 	local Axis = Props.Axis or Vector3.yAxis
-	local Basis = math.abs(Props.Axis.Y) < 0.9 and Vector3.yAxis or Vector3.xAxis
+	local Basis = math.abs(Axis.Y) < 0.9 and Vector3.yAxis or Vector3.xAxis
 	
 	local result = {}
 	
@@ -66,7 +66,7 @@ module.List = function(Elements : {Lookup.Element},Props : {
 	local UpDirection = Props.UpDirection.Unit
 	local Padding = Props.Padding or 0
 
-	if math.abs(UpDirection:Dot(Props.FillDirection)) > 0.99 then
+	if math.abs(UpDirection:Dot(FillDirection)) > 0.99 then
 		warn("Fill direction and Up direction are on the same axis")
 		return result
 	end
@@ -115,6 +115,8 @@ module.Grid = function(Elements : {Lookup.Element}, Props : {
 	Padding : Vector2})
 	local result = {}
 	
+	local Padding = Props.Padding or Vector2.zero
+
 	if #Elements > Props.RowSize * Props.ColumnSize then 
 		warn(`overfill: Tried to more than {Props.RowSize * Props.ColumnSize} Elements to a {Props.RowSize} x {Props.ColumnSize} grid`) 
 		return 
@@ -132,7 +134,7 @@ module.Grid = function(Elements : {Lookup.Element}, Props : {
 		local row = math.floor((i - 1) / Props.RowSize)
 		local column = (i - 1) % Props.ColumnSize
 		
-		local offset = Up * (row * (Element.Instance.Size.Y + Props.Padding.Y)) + Right * (column * (Element.Instance.Size.X + Props.Padding.X))
+		local offset = Up * (row * (Element.Instance.Size.Y + Padding.Y)) + Right * (column * (Element.Instance.Size.X + Padding.X))
 
 		local WorldPos = Start.Position + offset
 		result[i] = CFrame.new(WorldPos, WorldPos + LookDirection)
