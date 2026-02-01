@@ -1,4 +1,4 @@
-# Cinnamon 3D UI
+# Cinnamon 3D UI V0.1
 Cinnamon is a 3D UI framework for more expansive and powerful UI code
 
 This framework aims to give developers more options in how they use 3D user interfaces.
@@ -8,14 +8,15 @@ This is achieved with:
 - Support for Animations (Tweens/Bezier Curves/Springs/Oscillators)
 - Layouts
 - Tree based hierarchy
-- World anchored UI
+- support for both World and Screen anchored UI
 
 This lets Cinnamon be more versatile for more games which might require different use cases
 
 Cinnamon is good for:
-- 3D menus systems
+- menus systems
 - level UIs
-- 3d VFX
+- VFX
+- 3d HUDS
 
 and alot more
 
