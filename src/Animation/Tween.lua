@@ -8,6 +8,9 @@ local Lookup = require(script.Parent.Parent.Lookup)
 
 local GetEasedTime = function(Time,EasingDirection,EasingStyle)
 	
+	EasingDirection = typeof(EasingDirection) == "EnumItem" and EasingDirection.Name or EasingDirection
+	EasingStyle = typeof(EasingStyle) == "EnumItem" and EasingStyle.Name or EasingStyle
+
 	if EasingStyle == "Linear" then return Time end
 	if EasingStyle == "Constant" then
 		return Time >= 0.5 and 1 or 0

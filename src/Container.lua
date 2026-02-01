@@ -4,35 +4,48 @@ local Package = script.Parent
 local Element = require(Package.Element)
 local Lookup = require(Package.Lookup)
 
+local DebugRenderer = require(Package.DebugRenderer)
+
 local Schema = {}
 
-Schema.NewElement = Element
+Schema._NewElement = function(self : Lookup.UIContainer,UI : GuiObject,Offset : CFrame,Resolution : Vector2,Face : Enum.NormalId)
+	-- for internal use/optimisations only
+	warn("DO NOT USE THIS, use Container:Element()")
+
+	return Element(self,UI,Offset,Resolution,Face)
+end	
+Schema.Element = function(self : Lookup.UIContainer,Props : {
+	UI : GuiObject,
+    Offset : CFrame,
+    Resolution : Vector2,
+    Face : Enum.NormalId})
+
+	return Element(self, Props.UI, Props.Offset, Props.Resolution, Props.Face)
+end
+
 
 local NewContainer = function(ScreenGui :ScreenGui,Origin)
-	
-	
 	local Container = {}
 	Container.UI = ScreenGui
 	Container.Elements = {}
 	Container.Children = {}
 	Container.Destroyed = false
-	Container.Data = {
+	Container.Type = "Container"
+	Container._Data = {
 		Enabled = true,
-		Origin = Origin or CFrame.new(0,0,0)
+		Origin = Origin or CFrame.new(0,0,0),
+		Debug = false,
 	}
 	
-	
 	local meta = {__index = function(_,key)
-		return Schema[key] or Container.Data[key]
+		return Schema[key] or Container._Data[key]
 	end,
 	__newindex = function(Container : Lookup.UIContainer,index,value)
-		if index == "Enabled" then
-			Schema._SetEnabled(Container,value)
-		elseif index == "Origin" then
-			Schema._SetOrigin(Container,value)
-		end
+		if Schema[`_Set{index}`] then
+            Schema[`_Set{index}`](Container,value)
+        end
 		
-		Container.Data[index] = value
+		Container._Data[index] = value
 	end
 	}
 	
@@ -51,11 +64,20 @@ end
 
 Schema._SetEnabled = function(self : Lookup.UIContainer,Enabled)
 	for _,Element in self.Elements do
-		Element.Enabled = true
+		Element.Enabled = Enabled
 	end
+
 	for _,Container in self.Children do
 		Container.Enabled = Enabled
 	end
+end
+
+Schema._SetDebug = function(self : Lookup.UIContainer,Enabled)
+    if Enabled then
+        DebugRenderer.DebugContainer(self)
+    else
+        DebugRenderer.Remove(self)
+    end
 end
 
 --// memory management

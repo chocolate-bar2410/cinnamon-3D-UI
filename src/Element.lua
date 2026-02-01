@@ -3,10 +3,11 @@ local schema = {}
 local Package = script.Parent
 local Lookup = require(Package.Lookup)
 
+local DebugRenderer = require(Package.DebugRenderer)
+
 local PixelsPerStud = 150
 
 schema._SetEnabled = function(self : Lookup.Element,Enabled : boolean)
-	self.Enabled = Enabled
 	self.Instance.SurfaceGui.Enabled = self.Enabled
 end
 
@@ -63,17 +64,18 @@ local Init = function(self : Lookup.Element,Face : Enum.NormalId)
 	end)})]]
 end
 
-
-return function(Container : Lookup.UIContainer,UI : GuiObject,CFrameValue,Resolution,Face : Enum.NormalId)
+return function(Container : Lookup.UIContainer | Lookup.ScreenContainer,UI : GuiObject,Offset : CFrame,Resolution : Vector2,Face : Enum.NormalId)
 	Face = Face or Enum.NormalId.Back
 
 	local Element = {}
 	Element.Parent2D = UI.Parent
 	Element.UI = UI
 	Element.Connections = {}
-	
+	Element.Type = "Element"
+
 	Element._Data = {
-		Enabled = true
+		Enabled = true,
+		Debug = false
 	}
 	
 	local Display = Instance.new("Part",UI.Parent)
@@ -86,7 +88,12 @@ return function(Container : Lookup.UIContainer,UI : GuiObject,CFrameValue,Resolu
 	)
 
 	Element.UI.Parent = SurfaceGUI
-	Display.CFrame = Container.Origin * (CFrameValue or CFrame.new(0,0,0))
+
+	if Container.Type == "Container" then
+		Display.CFrame = Container.Origin * (Offset or CFrame.new(0,0,0))
+	elseif Container.Type == "ScreenContainer" then
+		Display.CFrame = Container.WorldCFrame * (Offset or CFrame.new(0,0,0))
+	end
 
 	Element.Instance = Display
 	Element.Container = Container
@@ -97,17 +104,21 @@ return function(Container : Lookup.UIContainer,UI : GuiObject,CFrameValue,Resolu
 	local meta = {__index = function(_,key)
 		return schema[key] or Element._Data[key]
 	end,
-	__newindex = function(Container : Lookup.UIContainer,index,value)
+	__newindex = function(Element : Lookup.Element,index,value)
 		if index == "Enabled" then
 			schema._SetEnabled(Element,value)
+		elseif index == "Debug" then
+			if value then
+				DebugRenderer.DebugElement(Element)
+			else
+				DebugRenderer.Remove(Element)
+			end
 		end
 
 		Element._Data[index] = value
 	end
 	}
 	
-	
 	table.insert(Container.Elements,Element)
-
 	return setmetatable(Element,meta) :: Lookup.Element
 end

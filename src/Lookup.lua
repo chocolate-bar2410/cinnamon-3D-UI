@@ -1,33 +1,58 @@
-
 export type UI3D_Object = {
 	Destroyed : boolean,
 	Destroy : (UI3D_Object) -> nil,
 	Enabled : boolean,
+	Debug : boolean,
+	Type : "Container" | "Element" | "ScreenContainer"
+}
+
+type BaseContainer = UI3D_Object & {
+	Type : "Container" | "ScreenContainer",
+	UI : ScreenGui,
+	Elements : {Element},
+	Clear : (BaseContainer) -> nil,
+	
+	Element : (
+		self : BaseContainer,
+		Props : {
+			UI : GuiObject,
+			Offset : CFrame,
+			Resolution : Vector2,
+    		Face : Enum.NormalId
+		}) -> Element,
 }
 
 export type Element = UI3D_Object & {
 	Instance : Part & {
 		SurfaceGui : SurfaceGui
 	},
+	Type : "Element",
+
 	UI : GuiObject,
 	Container : UIContainer,
 	Connections : {RBXScriptConnection},
-	Parent2D : GuiObject
-
+	Parent2D : GuiObject,
 }
 
-export type UIContainer = UI3D_Object & {
-	UI : ScreenGui,
+export type UIContainer = BaseContainer & {
 	Origin : CFrame,
-	Elements : {Element},
 	Children : {UIContainer},
-	
-	NewElement : (UIContainer,UI : GuiObject,CFrame,Size : Vector2,Face : Enum.NormalId) -> Element,
-	Clear : (UIContainer) -> nil,
+	Type : "Container",
+
 	UDim2ToCFrame : (UIContainer,Position : UDim2,ViewPortSize : Vector2,DisplayDistance : number) -> CFrame,
-	
 	NewContainer : (UIContainer,ScreenGui : ScreenGui, Origin : CFrame) -> UIContainer
 }
+
+export type ScreenContainer = BaseContainer & {
+	UI : ScreenGui,
+	Type : "ScreenContainer",
+	DisplayDistance : number,
+	WorldCFrame : CFrame,
+
+	UDim2ToCFrame : (ScreenContainer,Position : UDim2,ViewPortSize : Vector2) -> CFrame,
+	GetPartSize : (ScreenContainer,ViewPortSize : Vector2) -> Vector3,
+}
+
 
 export type Animatable<T> = {
 	Goal : T,
