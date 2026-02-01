@@ -12,17 +12,23 @@ module.ApplyLayout = function(Elements : {Lookup.Element},Layout : {CFrame})
 	end
 end
 
-module.Radial = function(Elements : {Lookup.Element},Origin : CFrame,Distance: number,StartAngle : number,Padding : number,Axis : Vector3)
-	local CurrentAngle = (StartAngle or 0) - Padding
-	Padding = Padding or 0
-	Axis = Axis or Vector3.yAxis
-	local Basis = math.abs(Axis.Y) < 0.9 and Vector3.yAxis or Vector3.xAxis
+module.Radial = function(Elements : {Lookup.Element},Props : {
+	Origin : CFrame,
+	Distance: number,
+	StartAngle : number,
+	Padding : number,
+	Axis : Vector3
+	})
+	local CurrentAngle = (Props.StartAngle or 0) - Props.Padding
+	local Padding = Props.Padding or 0
+	local Axis = Props.Axis or Vector3.yAxis
+	local Basis = math.abs(Props.Axis.Y) < 0.9 and Vector3.yAxis or Vector3.xAxis
 	
 	local result = {}
 	
 	for i,Element in ipairs(Elements) do
 		local HalfWidth = (Element.UI.AbsoluteSize.X / Element.Instance.SurfaceGui.PixelsPerStud) / 2
-		local D_angle = math.atan(HalfWidth / Distance)
+		local D_angle = math.atan(HalfWidth / Props.Distance)
 		
 		if CurrentAngle + 2 * D_angle + Padding > 2 * math.pi then
 			warn("overfill: Added too many elements to radial layout")
@@ -32,9 +38,9 @@ module.Radial = function(Elements : {Lookup.Element},Origin : CFrame,Distance: n
 		CurrentAngle += D_angle
 		
 		local Rotation = CFrame.fromAxisAngle(Axis,CurrentAngle)
-		local Offset = Rotation * (Axis:Cross(Basis).Unit * Distance)
+		local Offset = Rotation * (Axis:Cross(Basis).Unit * Props.Distance)
 		
-		local WorldPosition = Origin.Position + Offset
+		local WorldPosition = Props.Origin.Position + Offset
 		
 		local Tangent = Axis:Cross(Offset).Unit
 		local Binormal = Axis
@@ -48,18 +54,24 @@ module.Radial = function(Elements : {Lookup.Element},Origin : CFrame,Distance: n
 	return result
 end
 
-module.List = function(Elements : {Lookup.Element},Origin,FillDirection,UpDirection : Vector3,ItemsUntilWrap,Padding)
+module.List = function(Elements : {Lookup.Element},Props : {
+	Origin : CFrame,
+	FillDirection : Vector3,
+	UpDirection : Vector3,
+	ItemsUntilWrap : number,
+	Padding : number,
+	})
 	local result = {}
-	FillDirection = FillDirection.Unit
-	UpDirection = UpDirection.Unit
-	Padding = Padding or 0
+	local FillDirection = Props.FillDirection.Unit
+	local UpDirection = Props.UpDirection.Unit
+	local Padding = Props.Padding or 0
 
-	if math.abs(UpDirection:Dot(FillDirection)) > 0.99 then
+	if math.abs(UpDirection:Dot(Props.FillDirection)) > 0.99 then
 		warn("Fill direction and Up direction are on the same axis")
 		return result
 	end
 
-	local Start = CFrame.lookAt(Origin.Position, Origin.Position + FillDirection,-UpDirection)
+	local Start = CFrame.lookAt(Props.Origin.Position, Props.Origin.Position + FillDirection,-UpDirection)
 
 	local Right = Start.RightVector
 	local Down = -Start.UpVector
@@ -82,7 +94,7 @@ module.List = function(Elements : {Lookup.Element},Origin,FillDirection,UpDirect
 
 		RowOffset += Element.Instance.Size.X / 2 + Padding
 
-		if ItemsUntilWrap > 0 and row > ItemsUntilWrap then
+		if Props.ItemsUntilWrap > 0 and row > Props.ItemsUntilWrap then
 			row = 0
 			RowOffset = 0
 
@@ -95,17 +107,21 @@ module.List = function(Elements : {Lookup.Element},Origin,FillDirection,UpDirect
 	return result
 end
 
-module.Grid = function(Elements : {Lookup.Element}, Origin : CFrame, LookDirection : Vector3, RowSize, ColumnSize, Padding : Vector2)
+module.Grid = function(Elements : {Lookup.Element}, Props : {
+	Origin : CFrame, 
+	LookDirection : Vector3, 
+	RowSize : number,
+	ColumnSize : number, 
+	Padding : Vector2})
 	local result = {}
 	
-	if #Elements > RowSize * ColumnSize then 
-		warn(`overfill: Tried to more than {RowSize * ColumnSize} Elements to a {RowSize} x {ColumnSize} grid`) 
+	if #Elements > Props.RowSize * Props.ColumnSize then 
+		warn(`overfill: Tried to more than {Props.RowSize * Props.ColumnSize} Elements to a {Props.RowSize} x {Props.ColumnSize} grid`) 
 		return 
 	end
 
-	local Start = CFrame.new(Origin.Position, LookDirection)
-
-	LookDirection = LookDirection.Unit
+	local Start = CFrame.new(Props.Origin.Position, Props.LookDirection)
+	local LookDirection = Props.LookDirection.Unit
 
 	local Reference = math.abs(LookDirection:Dot(Vector3.yAxis)) < 0.99 and Vector3.yAxis or Vector3.xAxis	
 
@@ -113,10 +129,10 @@ module.Grid = function(Elements : {Lookup.Element}, Origin : CFrame, LookDirecti
 	local Up = Right:Cross(LookDirection.Unit).Unit
 
 	for i, Element in ipairs(Elements) do
-		local row = math.floor((i - 1) / RowSize)
-		local column = (i - 1) % ColumnSize
+		local row = math.floor((i - 1) / Props.RowSize)
+		local column = (i - 1) % Props.ColumnSize
 		
-		local offset = Up * (row * (Element.Instance.Size.Y + Padding.Y)) + Right * (column * (Element.Instance.Size.X + Padding.X))
+		local offset = Up * (row * (Element.Instance.Size.Y + Props.Padding.Y)) + Right * (column * (Element.Instance.Size.X + Props.Padding.X))
 
 		local WorldPos = Start.Position + offset
 		result[i] = CFrame.new(WorldPos, WorldPos + LookDirection)
@@ -165,10 +181,15 @@ local QuadraticBezierArcLength = function(Origin, P1, Goal, t)
     return length
 end
 
-module.QuadBezier = function(Elements : {Lookup.Element}, Origin : CFrame,P1 : CFrame,Goal : CFrame, Padding : number)
-	Padding = Padding or 0
+module.QuadBezier = function(Elements : {Lookup.Element}, Props : {
+	Origin : CFrame,
+	P1 : CFrame,
+	Goal : CFrame, 
+	Padding : number
+})
+	local Padding = Props.Padding or 0
 	local result = {}
-	local TotalLength = QuadraticBezierArcLength(Origin.Position, P1.Position, Goal.Position, 1)
+	local TotalLength = QuadraticBezierArcLength(Props.Origin.Position, Props.P1.Position, Props.Goal.Position, 1)
 
 	local CurrentTimePosition = 0
 	local D_length = 0
@@ -177,7 +198,7 @@ module.QuadBezier = function(Elements : {Lookup.Element}, Origin : CFrame,P1 : C
 		CurrentTimePosition += D_length
 		D_length = (Element.Instance.Size.X * 2 + Padding) / TotalLength
 		
-		local Position,Tangent = QuadraticBezier(Origin.Position, P1.Position, Goal.Position, CurrentTimePosition)
+		local Position,Tangent = QuadraticBezier(Props.Origin.Position, Props.P1.Position, Props.Goal.Position, CurrentTimePosition)
 		local WorldUp = Vector3.yAxis
 
 		if math.abs(Tangent:Dot(WorldUp)) > 0.99 then
