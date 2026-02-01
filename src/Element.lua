@@ -64,7 +64,7 @@ local Init = function(self : Lookup.Element,Face : Enum.NormalId)
 	end)})]]
 end
 
-return function(Container : Lookup.UIContainer | Lookup.ScreenContainer,UI : GuiObject,CFrameValue,Resolution,Face : Enum.NormalId)
+return function(Container : Lookup.UIContainer | Lookup.ScreenContainer,UI : GuiObject,Offset : CFrame,Resolution : Vector2,Face : Enum.NormalId)
 	Face = Face or Enum.NormalId.Back
 
 	local Element = {}
@@ -90,9 +90,9 @@ return function(Container : Lookup.UIContainer | Lookup.ScreenContainer,UI : Gui
 	Element.UI.Parent = SurfaceGUI
 
 	if Container.Type == "Container" then
-		Display.CFrame = Container.Origin * (CFrameValue or CFrame.new(0,0,0))
+		Display.CFrame = Container.Origin * (Offset or CFrame.new(0,0,0))
 	elseif Container.Type == "ScreenContainer" then
-		Display.CFrame = Container.WorldCFrame * (CFrameValue or CFrame.new(0,0,0))
+		Display.CFrame = Container.WorldCFrame * (Offset or CFrame.new(0,0,0))
 	end
 
 	Element.Instance = Display

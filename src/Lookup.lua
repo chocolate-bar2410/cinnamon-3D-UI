@@ -11,7 +11,16 @@ type BaseContainer = UI3D_Object & {
 	UI : ScreenGui,
 	Elements : {Element},
 	Clear : (BaseContainer) -> nil,
-	NewElement : (BaseContainer,UI : GuiObject,Offset : CFrame,Resolution : Vector2,Face : Enum.NormalId) -> Element,
+	NewElement : (self : BaseContainer,UI : GuiObject,Offset : CFrame,Resolution : Vector2,Face : Enum.NormalId) -> Element, -- dont use this
+	
+	Element : (
+		self : BaseContainer,
+		Props : {
+			UI : GuiObject,
+			Offset : CFrame,
+			Resolution : Vector2,
+    		Face : Enum.NormalId
+		}) -> Element,
 }
 
 export type Element = UI3D_Object & {

@@ -8,7 +8,21 @@ local DebugRenderer = require(Package.DebugRenderer)
 
 local Schema = {}
 
-Schema.NewElement = Element
+Schema.NewElement = function(self : Lookup.UIContainer,UI : GuiObject,Offset : CFrame,Resolution : Vector2,Face : Enum.NormalId)
+	-- remove warn if you plan to use this over Container:Element()
+	warn("This implementation is for backwards compatabilty and memory optimisations, use Container:Element() for regular use")
+
+	return Element(self,UI,Offset,Resolution,Face)
+end	
+Schema.Element = function(self : Lookup.UIContainer,Props : {
+	UI : GuiObject,
+    Offset : CFrame,
+    Resolution : Vector2,
+    Face : Enum.NormalId})
+
+	return Element(self, Props.UI, Props.Offset, Props.Resolution, Props.Face)
+end
+
 
 local NewContainer = function(ScreenGui :ScreenGui,Origin)
 	local Container = {}
