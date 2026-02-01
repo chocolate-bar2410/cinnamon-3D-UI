@@ -8,7 +8,7 @@ local DebugRenderer = require(Package.DebugRenderer)
 local PixelsPerStud = 150
 
 schema._SetEnabled = function(self : Lookup.Element,Enabled : boolean)
-	self.Instance.SurfaceGui.Enabled = self.Enabled
+	self.Instance.SurfaceGui.Enabled = Enabled
 end
 
 schema.Destroy = function(self : Lookup.Element)
