@@ -16,7 +16,7 @@ Cinnamon is good for:
 - menus systems
 - level UIs
 - VFX
-- 3d HUDS
+- 3d HUDs
 
 and alot more
 
