@@ -11,7 +11,6 @@ type BaseContainer = UI3D_Object & {
 	UI : ScreenGui,
 	Elements : {Element},
 	Clear : (BaseContainer) -> nil,
-	NewElement : (self : BaseContainer,UI : GuiObject,Offset : CFrame,Resolution : Vector2,Face : Enum.NormalId) -> Element, -- dont use this
 	
 	Element : (
 		self : BaseContainer,

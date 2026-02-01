@@ -59,9 +59,9 @@ local NewContainer = function(ScreenGui :ScreenGui,DisplayDistance : number)
 	return Container :: Lookup.ScreenContainer
 end
 
-Schema.NewElement = function(self : Lookup.ScreenContainer,UI : GuiObject,Offset : CFrame,Resolution : Vector2,Face : Enum.NormalId)
-	-- remove warn if you plan to use this over Container:Element()
-	warn("This implementation is for backwards compatabilty and memory optimisations, use Container:Element() for regular use")
+Schema._NewElement = function(self : Lookup.ScreenContainer,UI : GuiObject,Offset : CFrame,Resolution : Vector2,Face : Enum.NormalId)
+	-- for internal use/optimisations only
+	warn("DO NOT USE THIS, use Container:Element()")
 
 	return Element(self,UI,Offset,Resolution,Face)
 end	
