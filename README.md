@@ -20,7 +20,9 @@ Cinnamon is good for:
 
 and alot more
 
-go to [Tutorial](TUTORIAL.md) to learn how to use Cinnamon
+go to [Tutorial](TUTORIAL.md) to get a rundown of how to use cinnamon.
+
+download the [Documentation](CinnamonDocumentation) to get more info on cinnamon.
 if you want to see more updates feel free to contribute and star the project
 
 # how to install
