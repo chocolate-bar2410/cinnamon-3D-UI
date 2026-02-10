@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[CinnamonDocumentation]]></title><description><![CDATA[Obsidian digital garden]]></description><link>http://github.com/dylang/node-rss</link><image><url>site-lib/media/favicon.png</url><title>CinnamonDocumentation</title><link></link></image><generator>Webpage HTML Export plugin for Obsidian</generator><lastBuildDate>Tue, 10 Feb 2026 07:00:10 GMT</lastBuildDate><atom:link href="site-lib/rss.xml" rel="self" type="application/rss+xml"/><pubDate>Tue, 10 Feb 2026 07:00:07 GMT</pubDate><ttl>60</ttl><dc:creator></dc:creator><item><title><![CDATA[Cinnamon]]></title><description><![CDATA[Members:<a class="internal-link" data-href="API/Interfaces/Animation.md" href="api/interfaces/animation.html" target="_self" rel="noopener nofollow">Animation</a> - Methods for creating and handling animation<br>
+<a class="internal-link" data-href="API/Interfaces/Layout.md" href="api/interfaces/layout.html" target="_self" rel="noopener nofollow">Layout</a> - Handles layouts and provides template layoutsMethods:GetUI_3D -&gt; UIContainerfunction Cinnamon.GetUI_3D(ScreenGui) : UIContainer Clears out and destroys child objects without destroying the container
+NewContainer -&gt; UIContainerfunction Cinnamon.NewContainer( ScreenGui, Origin : CFrame
+) : UIContainer Creates a new UI container
+NewScreenContainer -&gt; ScreenContainerfunction Cinnamon.NewScreenContainer( ScreenGui, DisplayDistance : number
+) : ScreenContainer Creates a new ScreenContainer
+Destroy -&gt; nilfunction Cinnamon.Destroy( UI3D_Object : {Destroy : (T) -&gt; nil},
+) : nil Deletes anything with a internal destroy method
+]]></description><link>api/interfaces/cinnamon.html</link><guid isPermaLink="false">API/Interfaces/Cinnamon.md</guid><pubDate>Sat, 07 Feb 2026 02:35:01 GMT</pubDate></item><item><title><![CDATA[Intro]]></title><description><![CDATA[(note: its recommended to view this doc using obsidian)
+Cinnamon is a open source 3d UI framework to give developers a versatile and richer UI framework that goes beyond other 3d ui libraries.The aim of this framework is to give developers more creative control when making user interfaces in 3d, with support for things like animations, layouts, and reusable components.For more information check out the API
+Declarative hierarchy
+Cinnamon introduces Elements, which represents the individual UIs that are being displayed.
+Each Element is stored in a Container.
+-- this creates a container
+local Container = Cinnamon.NewContainer(ScreenGui,CFrame.new(0,2,0))
+-- this creates a element for a UI frame
+local Element = Container:Element({ UI = ScreenGui.Frame, Offset = CFrame.new(5,0,5), Resolution = Vector2.new(100,100),
+})
+containers can be nested inside other containers, creating a tree like hierarchy.-- this acts like a reusable component
+local CreateExample = function(Container,Origin) local InnerContainer = Container:NewContainer(Container.UI,Origin) InnerContainer:Element({ UI = ScreenGui.TextButton, Offset = CFrame.new(0,0,5), Resolution = Vector2.new(200,100) }) return InnerContainer
+end) local Container = Cinnamon.NewContainer(ScreenGui,CFrame.new(0,2,0)) local Example = CreateExample(Container,CFrame.new(0,5,0)) Layouts
+Cinnamon grants developers a easy way to layout their components in space, Allowing for quicker workflows and quick testing for ideas.
+local Container = Cinnamon.NewContainer(ScreenGui,CFrame.new(0,2,0))
+for _,v in ScreenGui:GetChildren() do Container:Element({ UI = v, Resolution = Vector2.new(200,100) })
+end
+local Layout = Cinnamon.Layout.Radial(Container.Elements,{ Origin = CFrame.new(0,5,0), Distance = 10, StartAngle = 0, Padding = math.rad(5), Axis = Vector3.new(0,1,0)
+})
+Cinnamon.Layout.ApplyLayout(Container.Elements,Layout) Since layouts are just a Array of CFrames, you can also make your own custom layouts local Custom = function(Elements) local result = {} for i,Element in ipairs(Elements) do result[i] = CFrame.new(i,math.random(1,5),0) end return result
+end Cinnamon.Layout.ApplyLayout(Container.Elements,Custom(Container.Elements)) Animations
+Using the many animation options, Cinnamon allows developers to animate elements how ever they want.
+Cinnamon allows you to either animate using Tweens, Bezier curves, Springs or Oscillators
+local Tween = Cinnamon.Animation.Tween(Element.Instance,"CFrame",CFrame.new(0,5,0),"Sine","OutIn",1) Tween.Enabled = true
+Animations are considered objects as well, That means you only have to declare a Animation once to play it.
+This lets you dynamically change how the animation playslocal Frequency = 1
+local Damping = 0.5
+local Response = 0.2
+local Spring = Cinnamon.Animation.Spring(Element.Instance,"CFrame",CFrame.new(0,5,0),Frequency,Damping,Response,1) Spring.Enabled = true
+task.wait() Cinnamon.Animation.SetGoal(Spring,CFrame.new(2,0,2)) We can also animate multiple elements, giving more creative options for our componentslocal ScreenGui = PlayerGui:WaitForChild("ScreenGui") local function BuildCarousel(Container : Cinnamon.UIContainer,ItemCount : number,Radius : number,Center : CFrame) local Carousel = Container:NewContainer(Container.UI,Center) for i = 1,ItemCount do local NewFrame = Instance.new("Frame",ScreenGui) NewFrame.Name = string.char(64 + i) NewFrame.Size = UDim2.fromScale(1,1) NewFrame.BackgroundColor3 = Color3.new(1,1,1) Carousel:Element({ UI = NewFrame, Offset = CFrame.new(0,0,0), Resolution = Vector2.new(800,600) }) end local A = Cinnamon.Layout.Radial(Carousel.Elements,{ Origin = Center, Distance = Radius, StartAngle = 0, Padding = math.rad(5), Axis = Vector3.new(0,1,0) }) local B = Cinnamon.Layout.Radial(Carousel.Elements,{ Origin = Center, Distance = Radius, StartAngle = 30, Padding = math.rad(5), Axis = Vector3.new(0,1,0) }) local C = Cinnamon.Layout.Radial(Carousel.Elements,{ Origin = Center, Distance = Radius, StartAngle = 30, Padding = math.rad(5), Axis = Vector3.new(0,1,0) }) Cinnamon.Layout.ApplyLayout(Carousel.Elements,A) return Carousel,{A,B,C}
+end local Container = Cinnamon.NewContainer(ScreenGui,CFrame.new(0,5,0))
+local Carousel,KeyframeTable = BuildCarousel(Container,11,10.75,Container.Origin:ToWorldPosition(CFrame.new(0,0,-10))) local Forwards = Cinnamon.Animation.BatchAnimation("Tween",Carousel.Elements,{ Property = "CFrame", EasingStyle = "Quad", EasingDirection = "InOut"
+},{ Goal = KeyframeTable[2]
+}) local Backwards = Cinnamon.Animation.BatchAnimation("Tween",Carousel.Elements,{ Property = "CFrame", EasingStyle = "Quad", EasingDirection = "InOut"
+},{ Goal = KeyframeTable[3]
+}) Forwards:SetEnabled(true)
+task.wait(1)
+Cinnamon.Layout.ApplyLayout(Carousel.Elements,KeyframeTable[1])
+Backwards:SetEnabled(true) ]]></description><link>intro.html</link><guid isPermaLink="false">Intro.md</guid><pubDate>Sat, 07 Feb 2026 02:31:49 GMT</pubDate></item><item><title><![CDATA[Element]]></title><description><![CDATA[Stores and displays your UI in space.Properties:Enabled : Boolean
+Determines if your UI is being displayed or not
+Debug : Boolean
+Adds/Removes the element from the Debug visualizer
+Members:UI : GuiObject
+The UI thats being displayed
+Parent2D : GuiObject | ScreenGui
+The UI's parent UI
+Instance : Part
+The physical Part that holds your UI
+Container: UIContainer | ScreenContainer
+The parent Container of the element
+Type : string
+Used for typechecking
+]]></description><link>api/objects/element.html</link><guid isPermaLink="false">API/Objects/Element.md</guid><pubDate>Sat, 07 Feb 2026 02:25:59 GMT</pubDate></item><item><title><![CDATA[Layout]]></title><description><![CDATA[Handles layouts and provides template layoutsMethods:ApplyLayout -&gt; nilfunction ApplyLayout( Elements : {Element}, Layout : {CFrame}
+) : nil Applies the layout to a table of elements
+Templates:
+Radial - Places elements in a ring formationfunction Radial(Elements : {Lookup.Element}, Props : { Origin : CFrame, Distance: number, StartAngle : number, Padding : number, Axis : Vector3 }
+)
+List - Places elements in straight linefunction List(Elements : {Lookup.Element}, Props : { Origin : CFrame, FillDirection : Vector3, UpDirection : Vector3, ItemsUntilWrap : number, Padding : number, }
+)
+Grid - Places elements on a gridfunction Grid(Elements : {Lookup.Element}, Props : { Origin : CFrame, LookDirection : Vector3, RowSize : number, ColumnSize : number, Padding : Vector2 }
+)
+Quad bezier - Places Elements along a bezier curvefunction QuadBezier(Elements : {Lookup.Element}, Props : { Origin : CFrame, P1 : CFrame, Goal : CFrame, Padding : number }
+)
+PlaceFromUDim2 - Places Elements according to its UI position, relative to its container originfunction PlaceFromUDim2( Elements : {Lookup.Element}, DisplayDistance
+)
+]]></description><link>api/interfaces/layout.html</link><guid isPermaLink="false">API/Interfaces/Layout.md</guid><pubDate>Sat, 07 Feb 2026 02:25:28 GMT</pubDate></item><item><title><![CDATA[Animation]]></title><description><![CDATA[Methods for creating and managing <a class="internal-link" data-href="API/Objects/Animatables.md" href="api/objects/animatables.html" target="_self" rel="noopener nofollow">animations</a>.Methods:
+Tween -&gt; Tweenfunction Animation.Tween&lt;T&gt;( _Instance : Instance, Property : string, Goal : T, EasingDirection : string, EasingStyle : string, Speed : number
+) : Tween&lt;T&gt; Creates tween animation
+Spring -&gt; Spring function Spring&lt;T&gt;( _Instance : Instance, Property : string, Goal : T, Frequency : number, Damping : number, Response : number, Speed : number ) : Spring&lt;T&gt; Creates spring animation
+Bezier -&gt; Bezierfunction Bezier&lt;T&gt;( _Instance : Instance, Property : string, Goal : T, EasingDirection : string, EasingStyle : string, P1 : T, P2 : T, Speed : number
+) : Bezier&lt;T&gt; Creates bezier animation
+Oscillator -&gt; Oscillatorfunction Oscillator&lt;T&gt;( _Instance : Instance, Property : string, Goal : T, Frequency : number, Phase : number, EasingDirection : string, EasingStyle : string, WaveForm : WaveForm, Speed : number
+) : Oscillator&lt;T&gt; Creates oscillation animation
+BatchAnimation -&gt; BatchAnimationfunction BatchAnimation&lt;T&gt;( AnimationType : "Tween" | "Spring" | "Bezier" | "Oscillator", _Instances : {Instance | Element}, Props : {Property : string}, GroupData : {Goal : {T},P1 : {T},P2 : {T},Phase : {number}}
+) : BatchAnimation Creates batch animation
+SetGoal -&gt; nilfunction SetGoal&lt;T&gt;(Animated : Animatable&lt;T&gt;,Goal : T) -&gt; nil Sets the goal of a single animation
+Reset -&gt; nilfunction Reset&lt;T&gt;(Animated : Animatable&lt;T&gt;) -&gt; nil Resets an animation
+]]></description><link>api/interfaces/animation.html</link><guid isPermaLink="false">API/Interfaces/Animation.md</guid><pubDate>Sat, 07 Feb 2026 02:15:00 GMT</pubDate></item><item><title><![CDATA[Screen Container]]></title><description><![CDATA[Holds <a class="internal-link" data-href="API/Objects/Element.md" href="api/objects/element.html" target="_self" rel="noopener nofollow">Elements</a> and positions them on the screen.Properties:Enabled : Boolean
+Enables/Disables child objects
+Debug : Boolean
+Adds/Removes itself and its child objects from the debug visualiser
+DisplayDistance : number
+How far the elements are from the screen
+Members: Elements : {Element}
+The Elements being stored
+UI : ScreenGui
+The UI that stores your Elements
+Methods:Element -&gt; Elementfunction Container:Element(Props : { UI : GuiObject, Offset : CFrame, Resolution : Vector2, Face : Enum.NormalId }
+) : Element creates a new element
+Clear -&gt; nilfunction Container:Clear() : nil Clears out and destroys child objects without destroying the container
+UDim2ToCFrame -&gt; CFramefunction Container:UDim2ToCFrame( Position : UDim2, ViewPortSize : Vector2, DisplayDistance : number
+) : CFrame Projects UDim2 to a position relative to the origin
+Partsize -&gt; Vector3
+function Container:UDim2ToCFrame( Position : UDim2, ViewPortSize : Vector2,
+) : CFrame Calculate how large a element should be using position and viewport size
+]]></description><link>api/objects/screen-container.html</link><guid isPermaLink="false">API/Objects/Screen Container.md</guid><pubDate>Sat, 07 Feb 2026 01:55:43 GMT</pubDate></item><item><title><![CDATA[Animatables]]></title><description><![CDATA[Animatable (Base class, not usable)type Animatable&lt;T&gt; = { Goal : T, Type : "Tween" | "Spring" | "Bezier" | "Oscillator", Instance : Instance, Property : string, Enabled : boolean, Speed : number, Destroy : (Animatable&lt;T&gt;), Time : number, Origin : T, }
+Tweens:type Tween&lt;T&gt; = Animatable&lt;T&gt; &amp; { EasingDirection : string, EasingStyle : string, Time : number, Origin : T, Type : "Tween"
+}
+Springs:type Spring&lt;T&gt; = Animatable&lt;T&gt; &amp; { k1 : number, k2 : number, k3 : number, Previous : T, Velocity : T, Type : "Spring"
+}
+Beziers:type Bezier&lt;T&gt; = Tween&lt;T&gt; &amp; { P1 : T, P2 : T, Type : "Bezier"
+}
+Oscillators:type Oscillator&lt;T&gt; = Tween&lt;T&gt; &amp; { Type : "Oscillator", Frequency : number, Phase : number, WaveForm : (Time : number,Frequency : number,Phase : number) -&gt; number
+}
+Batch Animation:type BatchAnimation&lt;T&gt; = {Animatable&lt;T&gt;} &amp; { SetEnabled : (BatchAnimation&lt;T&gt;,Enabled : Boolean) -&gt; nil, SetGoals : (BatchAnimation&lt;T&gt;,Goal : {T}) -&gt; nil,
+}
+]]></description><link>api/objects/animatables.html</link><guid isPermaLink="false">API/Objects/Animatables.md</guid><pubDate>Sat, 07 Feb 2026 01:46:42 GMT</pubDate></item><item><title><![CDATA[UI Container]]></title><description><![CDATA[Holds <a class="internal-link" data-href="API/Objects/Element.md" href="api/objects/element.html" target="_self" rel="noopener nofollow">Elements</a> and positions them in world position.Properties:Enabled : Boolean
+Enables/Disables child objects
+Debug : Boolean
+Adds/Removes itself and its child objects from the debug visualiser
+Origin : CFrame
+The point where its child objects are placed relative to
+Members: Elements : {Element}
+The Elements being stored
+Children : {UIContainer} The containers nested inside this container
+UI : ScreenGui
+The UI that stores your Elements
+Methods:NewContainer -&gt; Containerfunction Container:NewContainer( UI : ScreenGui, Origin : CFrame
+) : UIContainer creates a new child container
+Element -&gt; Elementfunction Container:Element(Props : { UI : GuiObject, Offset : CFrame, Resolution : Vector2, Face : Enum.NormalId }
+) : Element creates a new element
+Clear -&gt; nilfunction Container:Clear() : nil Clears out and destroys child objects without destroying the container
+UDim2ToCFrame -&gt; CFramefunction Container:UDim2ToCFrame( Position : UDim2, ViewPortSize : Vector2, DisplayDistance : number
+) : CFrame Projects UDim2 to a position relative to the origin
+]]></description><link>api/objects/ui-container.html</link><guid isPermaLink="false">API/Objects/UI Container.md</guid><pubDate>Sat, 07 Feb 2026 01:36:25 GMT</pubDate></item></channel></rss>
