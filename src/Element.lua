@@ -73,14 +73,15 @@ return function(Container : Lookup.UIContainer | Lookup.ScreenContainer,UI : Gui
 	Element.Connections = {}
 	Element.Type = "Element"
 
-	Element._Data = {
+	Element._Data = {	
 		Enabled = true,
 		Debug = false
 	}
 	
-	local Display = Instance.new("Part",UI.Parent)
+	local Display = Instance.new("Part",Container.UI)
 	local SurfaceGUI = Instance.new("SurfaceGui",Display)
 	
+	Display.Name = UI.Name
 	Display.Size = Vector3.new(
 		((Resolution.X * UI.Size.X.Scale) + UI.Size.X.Offset) / PixelsPerStud,
 		((Resolution.Y * UI.Size.Y.Scale) + UI.Size.Y.Offset) / PixelsPerStud,
