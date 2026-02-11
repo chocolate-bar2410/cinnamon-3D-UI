@@ -11,6 +11,30 @@ schema._SetEnabled = function(self : Lookup.Element,Enabled : boolean)
 	self.Instance.SurfaceGui.Enabled = Enabled
 end
 
+schema._SetDebug = function(self : Lookup.Element,Enabled : boolean)
+    if value then
+		DebugRenderer.DebugElement(self)
+	else
+		DebugRenderer.Remove(self)
+	end
+end
+
+schema._SetResolution = function(self : Lookup,Resolution : Vector2)
+	self.Instance.Size = Vector3.new(
+		((Resolution.X * self.UI.Size.X.Scale) + self.UI.Size.X.Offset) / PixelsPerStud,
+		((Resolution.Y * self.UI.Size.Y.Scale) + self.UI.Size.Y.Offset) / PixelsPerStud,
+		1
+	)
+end
+
+schema._SetOffset = function(self : Lookup,Offset : CFrame)
+	if self.Container.Type == "Container" then
+		self.Instance.CFrame = self.Container.Origin * Offset
+	elseif self.Container.Type == "ScreenContainer" then
+		self.Instance.CFrame = self.Container.WorldCFrame * Offset
+	end
+end
+
 schema.Destroy = function(self : Lookup.Element)
 	if self.Destroyed then return end
 	self.Destroyed = true
@@ -66,7 +90,7 @@ end
 
 return function(Container : Lookup.UIContainer | Lookup.ScreenContainer,UI : GuiObject,Offset : CFrame,Resolution : Vector2,Face : Enum.NormalId)
 	Face = Face or Enum.NormalId.Back
-
+	Offset = Offset or CFrame.new(0,0,0)
 	local Element = {}
 	Element.Parent2D = UI.Parent
 	Element.UI = UI
@@ -75,7 +99,9 @@ return function(Container : Lookup.UIContainer | Lookup.ScreenContainer,UI : Gui
 
 	Element._Data = {	
 		Enabled = true,
-		Debug = false
+		Debug = false,
+		Resolution = Resolution,
+		Offset = Offset
 	}
 	
 	local Display = Instance.new("Part",Container.UI)
@@ -91,9 +117,9 @@ return function(Container : Lookup.UIContainer | Lookup.ScreenContainer,UI : Gui
 	Element.UI.Parent = SurfaceGUI
 
 	if Container.Type == "Container" then
-		Display.CFrame = Container.Origin * (Offset or CFrame.new(0,0,0))
+		Display.CFrame = Container.Origin * Offset
 	elseif Container.Type == "ScreenContainer" then
-		Display.CFrame = Container.WorldCFrame * (Offset or CFrame.new(0,0,0))
+		Display.CFrame = Container.WorldCFrame * Offset
 	end
 
 	Element.Instance = Display
@@ -106,16 +132,10 @@ return function(Container : Lookup.UIContainer | Lookup.ScreenContainer,UI : Gui
 		return schema[key] or Element._Data[key]
 	end,
 	__newindex = function(Element : Lookup.Element,index,value)
-		if index == "Enabled" then
-			schema._SetEnabled(Element,value)
-		elseif index == "Debug" then
-			if value then
-				DebugRenderer.DebugElement(Element)
-			else
-				DebugRenderer.Remove(Element)
-			end
-		end
-
+		if schema[`_Set{index}`] then
+            schema[`_Set{index}`](Element,value)
+        end
+		
 		Element._Data[index] = value
 	end
 	}

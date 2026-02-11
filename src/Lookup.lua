@@ -32,6 +32,9 @@ export type Element = UI3D_Object & {
 	Container : UIContainer,
 	Connections : {RBXScriptConnection},
 	Parent2D : GuiObject,
+
+	Offset : CFrame,
+	Resolution : Vector2
 }
 
 export type UIContainer = BaseContainer & {
