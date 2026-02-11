@@ -42,7 +42,6 @@ module.Update = function(self : Lookup.Oscillator<any>,d_time)
 	
 	if TypeName == "CFrame" then
 		self.Instance[Property] = self.Origin:Lerp(self.Goal,Waveform(EasedTime,self.Frequency,self.Phase))
-		print(Waveform(EasedTime,self.Frequency,self.Phase))
 	else
 		self.Instance[Property] = LerpFunction(self.Origin,self.Goal,Waveform(EasedTime,self.Frequency,self.Phase))
 		
