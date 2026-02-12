@@ -56,6 +56,11 @@ export type ScreenContainer = BaseContainer & {
 	GetPartSize : (ScreenContainer,ViewPortSize : Vector2) -> Vector3,
 }
 
+export type AnimTimeline = {
+	IndexPointer : number,
+	BaseSpeed : number,
+	InitStates : {[string] : any},
+} & {{Time : number} & {[string] : any}}
 
 export type Animatable<T> = {
 	Goal : T,
@@ -70,6 +75,7 @@ export type Animatable<T> = {
 	Time : number,
 	Origin : T,
 	
+	Timeline : AnimTimeline,
 }
 
 export type Tween<T> = Animatable<T> & {
@@ -107,55 +113,19 @@ export type Oscillator<T> = Tween<T> & {
 export type WaveForm = (Time : number,Frequency : number,Phase : number) -> number
 
 export type AnimationMethods = {
-	Tween : <T>(
-		_Instance : Instance,
-		Property : string,
-		Goal : T,
-		EasingDirection : string,
-		EasingStyle : string,
-		Speed : number
-	) -> Tween<T>,
-	Spring : <T>(
-		_Instance : Instance,
-		Property : string,
-		Goal : T,
-		Frequency : number,
-		Damping : number,
-		Response : number,
-		Speed : number
-	) -> Spring<T>,
-	Bezier : <T>(
-		_Instance : Instance,
-		Property : string,
-		Goal : T,
-		EasingDirection : string,
-		EasingStyle : string,
-		P1 : T,
-		P2 : T,
-		Speed : number
-	) -> Bezier<T>,
-	Oscillator : <T>(
-		_Instance : Instance,
-		Property : string,
-		Goal : T,
-		Frequency : number,
-		Phase : number,
-		EasingDirection : string,
-		EasingStyle : string,
-		WaveForm : WaveForm,
-		Speed : number
-	) -> Oscillator<T>,
+	Animate : <T>(Instance,AnimationPropertyTable<T>) -> Animatable<T>,
+
 	BatchAnimation : <T>(
 		AnimationType : "Tween" | "Spring" | "Bezier" | "Oscillator",
 		_Instances : {Instance | Element},
 		Props : {Property : string},
-		GroupData : {Goal : {T},P1 : {T},P2 : {T},Phase : {number}}
-		
+		GroupData : {Goal : {T},P1 : {T},P2 : {T},Phase : {number}}	
 	) -> {Animatable<T>} & {
 		SetEnabled : (Enabled : boolean) -> nil,
 		SetGoals : (Goal : {T}) -> nil,
 	},
 	
+	AttachTimeline : <T>(Animatable : Animatable<T>,Timeline : AnimTimeline) -> nil,
 	
 	
 	SetGoal : <T>(Animated : Animatable<T>,Goal : T) -> nil,
@@ -163,15 +133,23 @@ export type AnimationMethods = {
 
 }
 
-export type BatchAnimationPropertyTable = {
+export type BaseAnimationPropertyTable = {
 	Property : string,
 	EasingDirection : string,
 	EasingStyle : string,
-	Speed : number,
+	Time : number,
 	Frequency : number,
 	Damping : number,
 	Response : number,
 	WaveForm : WaveForm
+}
+
+export type AnimationPropertyTable<T> = BaseAnimationPropertyTable & {
+	Type : "Tween" | "Spring" | "Bezier" | "Oscillator",
+	Goal : T,
+	P1 : T,
+	P2 : T,
+	Phase : number,
 }
 
 return {
