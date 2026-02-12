@@ -1,5 +1,3 @@
-local ContainerIndex = {}
-
 local Container = require(script.Container)
 local Animation = require(script.Animation) 
 local Lookup = require(script.Lookup)
@@ -9,10 +7,59 @@ local ScreenContainer = require(script.ScreenContainer)
 
 local RunService = game:GetService("RunService")
 
+local ContainerIndex : {[ScreenGui] : Lookup.BaseContainer} = {}
+
+local Player : Player = game.Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+
+local RenderDistance = 200
+
+local CullChecks = function()
+	local Params = RaycastParams.new()
+	local Filter = {}
+
+	for _,v in game.Players:GetPlayers() do
+		table.insert(Filter,v)
+	end
+
+	Params.FilterDescendantsInstances = Filter
+	Params.FilterType = Enum.RaycastFilterType.Exclude
+
+	for _,Container in ContainerIndex do
+		if Container.Type ~= "Container" then continue end
+
+		for _,Element in Container.Elements do
+
+			if Element._RevertToEnabled == false and Element.Enabled == false then continue end
+			local WorldPosition = Container.Origin:ToWorldSpace(Element.Offset).Position
+			local PlayerPosition = Character.HumanoidRootPart.Position
+			local _,OnScreen = workspace.CurrentCamera:WorldToViewportPoint(WorldPosition)
+
+			local Visible = true
+
+			if (WorldPosition - PlayerPosition).Magnitude > RenderDistance then Visible = false end	
+
+			if not OnScreen then Visible = false end
+
+			if not Visible then
+				Element:_SetEnabled(false)
+				Element._Data.Enabled = false
+			else
+				Element.Enabled = Element._RevertToEnabled
+			end
+				
+
+
+		end
+
+	end
+end
+
 RunService:BindToRenderStep("Cinnamon_AnimationUpdate",Enum.RenderPriority.Last.Value + 2,function(d_time)
 	Animation.Update(d_time) -- [1] Animations
 	DebugRenderer.Update() -- [2] Debug renderer
 	ScreenContainer[2]() -- [3] Screen Space Containers
+	CullChecks() --[4] Element optimisations
 end)
 
 export type Element = Lookup.Element

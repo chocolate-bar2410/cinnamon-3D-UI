@@ -9,17 +9,22 @@ local PixelsPerStud = 150
 
 schema._SetEnabled = function(self : Lookup.Element,Enabled : boolean)
 	self.Instance.SurfaceGui.Enabled = Enabled
+	if Enabled then
+		self.UI.Parent = self.Instance.SurfaceGui
+	else
+		self.UI.Parent = self.Parent2D
+	end
 end
 
 schema._SetDebug = function(self : Lookup.Element,Enabled : boolean)
-    if value then
+    if Enabled then
 		DebugRenderer.DebugElement(self)
 	else
 		DebugRenderer.Remove(self)
 	end
 end
 
-schema._SetResolution = function(self : Lookup,Resolution : Vector2)
+schema._SetResolution = function(self : Lookup.Element,Resolution : Vector2)
 	self.Instance.Size = Vector3.new(
 		((Resolution.X * self.UI.Size.X.Scale) + self.UI.Size.X.Offset) / PixelsPerStud,
 		((Resolution.Y * self.UI.Size.Y.Scale) + self.UI.Size.Y.Offset) / PixelsPerStud,
@@ -27,7 +32,7 @@ schema._SetResolution = function(self : Lookup,Resolution : Vector2)
 	)
 end
 
-schema._SetOffset = function(self : Lookup,Offset : CFrame)
+schema._SetOffset = function(self : Lookup.Element,Offset : CFrame)
 	if self.Container.Type == "Container" then
 		self.Instance.CFrame = self.Container.Origin * Offset
 	elseif self.Container.Type == "ScreenContainer" then
@@ -96,6 +101,7 @@ return function(Container : Lookup.UIContainer | Lookup.ScreenContainer,UI : Gui
 	Element.UI = UI
 	Element.Connections = {}
 	Element.Type = "Element"
+	Element._RevertToEnabled = true
 
 	Element._Data = {	
 		Enabled = true,
@@ -135,6 +141,10 @@ return function(Container : Lookup.UIContainer | Lookup.ScreenContainer,UI : Gui
 		if schema[`_Set{index}`] then
             schema[`_Set{index}`](Element,value)
         end
+
+		if index == "Enabled" then
+			Element._RevertToEnabled = value
+		end
 		
 		Element._Data[index] = value
 	end

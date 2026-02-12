@@ -6,7 +6,7 @@ export type UI3D_Object = {
 	Type : "Container" | "Element" | "ScreenContainer"
 }
 
-type BaseContainer = UI3D_Object & {
+export type BaseContainer = UI3D_Object & {
 	Type : "Container" | "ScreenContainer",
 	UI : ScreenGui,
 	Elements : {Element},
@@ -34,7 +34,8 @@ export type Element = UI3D_Object & {
 	Parent2D : GuiObject,
 
 	Offset : CFrame,
-	Resolution : Vector2
+	Resolution : Vector2,
+	_RevertToEnabled : boolean,
 }
 
 export type UIContainer = BaseContainer & {
