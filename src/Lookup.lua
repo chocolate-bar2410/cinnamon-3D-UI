@@ -153,6 +153,43 @@ export type AnimationPropertyTable<T> = BaseAnimationPropertyTable & {
 	Phase : number,
 }
 
+export type CompileToken = {
+	Type : string,
+	Value : string | number,
+	Line : number,
+	Column : number,
+}
+
+export type CompileNode = {
+	NodeType : "string"
+}
+
+export type ParseHelper = {
+	Tokens : {CompileToken},
+	Position : number,
+	AST : {Body : {CompileNode},Header : CompileNode},
+	ParseMode : number,
+
+	Advance : (ParseHelper) -> CompileToken,
+	CurrentToken : (ParseHelper) -> CompileToken,
+	CurrentTokenType : (ParseHelper) -> string,
+	CurrentTokenValue : (ParseHelper) -> string | number,
+	Expect : (ParseHelper,string) -> CompileToken?,
+	ExpectType : (ParseHelper,string) -> CompileToken?,
+	GoBack : (ParseHelper) -> CompileToken,
+	LookAhead : (ParseHelper) -> CompileToken,
+}
+
+export type BuildHelper = {
+	AST : {Body : {CompileNode},Header : CompileNode},
+	Reference : {[string] : any},
+	BuildMethods : {},
+	Built : {},
+
+	TraverseBody : (BuildHelper) -> nil,
+	TraverseNode : (BuildHelper,CompileNode,any) -> any,
+}
+
 return {
 	
 	EasingFunctions = {

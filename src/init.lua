@@ -2,7 +2,7 @@ local Container = require(script.Container)
 local Animation = require(script.Animation) 
 local Lookup = require(script.Lookup)
 local DebugRenderer = require(script.DebugRenderer)
-
+local Compilation = require(script.Compilation)
 local ScreenContainer = require(script.ScreenContainer)
 
 local RunService = game:GetService("RunService")
@@ -93,6 +93,7 @@ return {
 		UI3D_Object:Destroy()
 	end,
 	Layout = require(script.Layout),
+	Compile = Compilation
 }
 
 
