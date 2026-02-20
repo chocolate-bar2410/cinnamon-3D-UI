@@ -9,6 +9,7 @@ return function(Source : string,Reference : {[string] : any})
     local Tokens = Lex(Source)
     print(Tokens)
     local AST = Parse(Tokens)
+    print(AST)
 
     if #ErrorHandling.ErrorLog > 0 then
         ErrorHandling.PrintErrorLog()
@@ -16,6 +17,11 @@ return function(Source : string,Reference : {[string] : any})
     end
 
     local Built = Builder(AST,Reference)
+
+    if #ErrorHandling.ErrorLog > 0 then 
+        ErrorHandling.PrintErrorLog()
+        return
+    end
 
     return Built
 end

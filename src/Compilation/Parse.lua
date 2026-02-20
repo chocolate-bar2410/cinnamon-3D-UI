@@ -145,7 +145,6 @@ ParseMethods.Map = function(Parser : Lookup.ParseHelper)
         Parser:Expect("]")
         Parser:Expect(":")
 
-        print(Parser:CurrentToken())
         local Value = ParseStatement(Parser)
         Items[Key.Value] = Value
 

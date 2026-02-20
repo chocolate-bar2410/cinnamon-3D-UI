@@ -18,6 +18,14 @@ Schema.TraverseNode = function(self : Lookup.BuildHelper,Node,Argument)
     return result
 end
 
+Schema.TraverseTable = function(self : Lookup.BuildHelper,NodeTable : {Lookup.CompileNode},Argument)
+    for i,v in NodeTable do
+        NodeTable[i] = self:TraverseNode(v,Argument)
+    end
+
+    return NodeTable
+end
+
 Schema.TraverseBody = function(self : Lookup.BuildHelper)
     for _,Node in self.AST.Body do
         self:TraverseNode(Node)

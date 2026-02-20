@@ -188,6 +188,7 @@ export type BuildHelper = {
 
 	TraverseBody : (BuildHelper) -> nil,
 	TraverseNode : (BuildHelper,CompileNode,any) -> any,
+	TraverseTable : (BuildHelper,{CompileNode},any) -> {any},
 }
 
 return {

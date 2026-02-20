@@ -1,3 +1,4 @@
+local EncodingService = game:GetService("EncodingService")
 local module = {}
 
 local Messagetab : {string} = {
@@ -15,6 +16,14 @@ module.LogError = function(ErrorType,ErrorMessage,Line,Column)
     end
 
     table.insert(module.ErrorLog,Message)
+end
+
+module.LogAssert = function(Condition,ErrorType,ErrorMessage,Line,Column)
+    if Condition then return true end
+
+    module.LogError(ErrorType, ErrorMessage, Line, Column)
+
+    return false
 end
 
 module.PrintErrorLog = function()
