@@ -140,7 +140,7 @@ module.Interface.Animate = function<T>(_Instance,
 )
 	local AnimationType = Props.Type
 
-	local Speed = 1 / Props.Time or 1 
+	local Speed = Props.Time and 1 / Props.Time or 1 
 
 	if not AnimationType then 
 		warn("Must Add Animation Type")
