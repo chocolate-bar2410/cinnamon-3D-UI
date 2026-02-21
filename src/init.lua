@@ -93,7 +93,18 @@ return {
 		UI3D_Object:Destroy()
 	end,
 	Layout = require(script.Layout),
-	Compile = Compilation
+	Compile = function(Source,Reference)
+		local Objects = Compilation(Source, Reference)
+
+		for _,v : Lookup.BaseContainer in Objects do
+			if not v.Type then continue end
+			if v.Type ~= "Container" and v.Type ~= "ScreenContainer" then continue end
+
+			ContainerIndex[v.UI] = v
+		end
+
+		return Objects
+	end
 }
 
 
