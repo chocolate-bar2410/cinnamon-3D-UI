@@ -126,7 +126,7 @@ export type AnimationMethods = {
 		SetGoals : (Goal : {T}) -> nil,
 	},
 	
-	AttachTimeline : <T>(Animatable : Animatable<T>,Timeline : AnimTimeline) -> nil,
+	AttachTimeline : <T>(Animatable : Animatable<T>,Timeline : {{Time : number} & {[string] : any}}) -> AnimTimeline,
 	
 	
 	SetGoal : <T>(Animated : Animatable<T>,Goal : T) -> nil,
