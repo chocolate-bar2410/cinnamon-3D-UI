@@ -43,11 +43,10 @@ module.Update = function(d_time)
 	
 	for _,TimelineAnim in TimelineAnims do
 		local Timeline = TimelineAnim.Timeline
-
 		if Timeline.IndexPointer >= #Timeline or TimelineAnim.Time < 1 then continue end
+		
 		Timeline.IndexPointer += 1
 		TimelineAnim.Time -= 1
-
 
 		local SetOrigin = true
 
@@ -199,10 +198,6 @@ module.Interface.AttachTimeline = function<T>(Animatable : Lookup.Animatable<T>,
 
 	table.insert(TimelineAnims,Animatable)
 
-	table.sort(Timeline,function(a,b)
-		return a.Time < b.Time
-	end)
-
 	local InitStates = {}
 
 	InitStates.Origin = Animatable.Origin
@@ -222,6 +217,8 @@ module.Interface.AttachTimeline = function<T>(Animatable : Lookup.Animatable<T>,
 
 	Timeline.InitStates = InitStates
 	Timeline.IndexPointer = 0
+
+	return Timeline
 end
 
 module.Interface.BatchAnimation = function(AnimationType : string,
@@ -231,7 +228,7 @@ module.Interface.BatchAnimation = function(AnimationType : string,
 
 	if not module[AnimationType] then return end
 
-	local Speed = 1 / Props.Time or 1 
+	local Speed = Props.Time and 1 / Props.Time or 1 
 
 	local result = {}
 
@@ -248,23 +245,20 @@ module.Interface.BatchAnimation = function(AnimationType : string,
 	end
 
 	for i,v in ipairs(_Instances) do
-		if typeof(v) == "table" and not v.Instance then continue end
-
-		local _Instance = typeof(v) == "table" and v.Instance or v
 		local Animatable
 		local Goal = GroupData.Goal[i]
 
 		if AnimationType == "Tween" then
-			Animatable = module.Tween(_Instance,Props.Property,Goal,Props.EasingDirection,Props.EasingStyle,Speed)
+			Animatable = module.Tween(v,Props.Property,Goal,Props.EasingDirection,Props.EasingStyle,Speed)
 		elseif AnimationType == "Spring" then
-			Animatable = module.Spring(_Instance,Props.Property,Goal,Props.Frequency,Props.Damping,Props.Response,Speed)
+			Animatable = module.Spring(v,Props.Property,Goal,Props.Frequency,Props.Damping,Props.Response,Speed)
 		elseif AnimationType == "Bezier" then
 			local P1 = GroupData.P1 and GroupData.P1[i] or nil
 			local P2 = GroupData.P2 and GroupData.P2[i] or nil
 
-			Animatable = module.Bezier(_Instance,Props.Property,Goal,Props.EasingDirection,Props.EasingStyle,P1,P2,Speed)
+			Animatable = module.Bezier(v,Props.Property,Goal,Props.EasingDirection,Props.EasingStyle,P1,P2,Speed)
 		elseif AnimationType == "Oscillator" then
-			Animatable = module.Oscillator(_Instance,Props.Property,Goal,Props.Frequency,GroupData.Phase[i],Props.EasingDirection,Props.EasingStyle,Props.WaveForm,Speed)
+			Animatable = module.Oscillator(v,Props.Property,Goal,Props.Frequency,GroupData.Phase[i],Props.EasingDirection,Props.EasingStyle,Props.WaveForm,Speed)
 		end
 
 		table.insert(result,Animatable)
