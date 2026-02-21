@@ -3,6 +3,7 @@ local SpecialCharacters = {
     ["}"] = true, ["("] = true, [")"] = true,
     ["["] = true, ["]"] = true, [","] = true,
     [":"] = true, ["|"] = true, ["/"] = true,
+    ["-"] = true,
 }
 
 local NewToken = function(Value,Type,Line,Column)
@@ -105,6 +106,20 @@ return function(Source)
 
             Current = Value
             index += 1
+        elseif Current == "-" then
+            TYPE = "SPECIAL"
+            local Value = Words[index]
+
+            if Value == ">" then
+                TYPE = "ARROW"
+                Value = "->"
+                index += 1
+            else
+                Words[index] = "-" .. Words[index]
+                continue
+            end
+
+            Current = Value
         elseif SpecialCharacters[Current] then
             TYPE = "SPECIAL"
         else

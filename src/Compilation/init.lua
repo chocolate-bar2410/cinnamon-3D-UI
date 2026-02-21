@@ -7,9 +7,8 @@ local ErrorHandling = require(Package.Errors)
 
 return function(Source : string,Reference : {[string] : any})
     local Tokens = Lex(Source)
-    print(Tokens)
+
     local AST = Parse(Tokens)
-    print(AST)
 
     if #ErrorHandling.ErrorLog > 0 then
         ErrorHandling.PrintErrorLog()

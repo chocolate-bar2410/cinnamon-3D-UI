@@ -29,6 +29,10 @@ end
 ParseMethods.Block = function(Parser : Lookup.ParseHelper)
     if Parser:CurrentTokenValue() == "container" then
         return ParseMethods["container"](Parser)
+    elseif Parser:CurrentTokenValue() == "screencontainer" then
+        return ParseMethods["screencontainer"](Parser)
+    elseif Parser:CurrentTokenValue() == "timeline" then
+        return ParseMethods["timeline"](Parser)
     end
 
     local StartBlock = Parser:Advance()
@@ -94,6 +98,83 @@ ParseMethods.container = function(Parser : Lookup.ParseHelper)
     Parser:Advance()
 
     return {NodeType = "UIContainer",Properties = Properties,Elements = Elements}
+end
+
+ParseMethods.screencontainer = function(Parser : Lookup.ParseHelper)
+    Parser:Advance()
+    local Properties = {}
+    local Elements = {}
+
+    while Parser:CurrentToken() do
+        
+        if Parser:CurrentTokenType() == "ENDBLOCK" and Parser:CurrentTokenValue() == "screencontainer" then 
+            break 
+        end
+
+        if Parser:CurrentTokenType() == "BLOCK" and Parser:CurrentTokenValue() == "element" then
+            local Element = ParseStatement(Parser)
+            table.insert(Elements,Element)
+            continue
+        end
+
+        Parser:Expect("|")
+
+        Parser:ExpectType("IDENTIFIER")
+        Parser:GoBack()
+
+        local Identifier = ParseStatement(Parser)
+        Parser:Expect(":")
+        local Value = ParseStatement(Parser)
+
+        Properties[Identifier.Value] = Value
+    end
+
+    Parser:Advance()
+
+    return {NodeType = "screencontainer",Properties = Properties,Elements = Elements}
+end
+
+ParseMethods.timeline = function(Parser : Lookup.ParseHelper)
+    Parser:Advance()
+    local Properties = {}
+    local TimelineEntries = {}
+
+    while Parser:CurrentToken() do
+        
+        if Parser:CurrentTokenType() == "ENDBLOCK" and Parser:CurrentTokenValue() == "timeline" then 
+            break 
+        end
+
+        Parser:Expect("|")
+
+        if Parser:CurrentTokenValue() == "[" and Parser:CurrentTokenType() == "SPECIAL" then
+            Parser:Advance()
+            Parser:ExpectType("NUMBER")
+            Parser:GoBack()
+            local Duration = ParseStatement(Parser)
+            
+            Parser:Expect("]")
+            Parser:ExpectType("ARROW")
+
+            local Map = ParseStatement(Parser)
+
+            table.insert(TimelineEntries,{Time = Duration,Data = Map})
+            continue
+        end
+
+        Parser:ExpectType("IDENTIFIER")
+        Parser:GoBack()
+
+        local Identifier = ParseStatement(Parser)
+        Parser:Expect(":")
+        local Value = ParseStatement(Parser)
+
+        Properties[Identifier.Value] = Value
+    end
+
+    Parser:Advance()
+
+    return {NodeType = "timeline",Properties = Properties,TimelineEntries = TimelineEntries}
 end
 
 ParseMethods.Value = function(Parser : Lookup.ParseHelper)
