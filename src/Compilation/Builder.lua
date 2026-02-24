@@ -25,7 +25,16 @@ BuildMethods.UIContainer = function(Builder : Lookup.BuildHelper,Node)
         return
     end
 
-    local NewContainer = Container(Properties.UI, Properties.Origin)
+    local NewContainer
+
+    if Properties.Parent then
+        if not ErrorHandling.LogAssert(Properties.Parent.Type, "Compile", `Parent must be a cinnamon object`) then return end
+        if not ErrorHandling.LogAssert(Properties.Parent.Type == "Container", "Compile", `Parent must be a Container`) then return end 
+
+        NewContainer = Properties.Parent:NewContainer(Properties.UI, Properties.Origin)
+    else
+        NewContainer = Container(Properties.UI, Properties.Origin)
+    end
 
     Builder:TraverseTable(Node.Elements,NewContainer)
 
