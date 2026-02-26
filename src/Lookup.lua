@@ -111,6 +111,11 @@ export type Oscillator<T> = Tween<T> & {
 	WaveForm : WaveForm
 }
 
+export type BatchAnimation<T> = {Animatable<T>} & {
+	SetEnabled : (Enabled : boolean) -> nil,
+	SetGoals : (Goal : {T}) -> nil,
+}
+
 export type WaveForm = (Time : number,Frequency : number,Phase : number) -> number
 
 export type AnimationMethods = {
@@ -121,10 +126,7 @@ export type AnimationMethods = {
 		_Instances : {Instance | Element},
 		Props : {Property : string},
 		GroupData : {Goal : {T},P1 : {T},P2 : {T},Phase : {number}}	
-	) -> {Animatable<T>} & {
-		SetEnabled : (Enabled : boolean) -> nil,
-		SetGoals : (Goal : {T}) -> nil,
-	},
+	) -> BatchAnimation<T>,
 	
 	AttachTimeline : <T>(Animatable : Animatable<T>,Timeline : {{Time : number} & {[string] : any}}) -> AnimTimeline,
 	

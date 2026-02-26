@@ -67,6 +67,9 @@ export type UIContainer = Lookup.UIContainer
 export type ScreenContainer = Lookup.ScreenContainer
 export type Spring<T> = Lookup.Spring<T>
 export type Tween<T> = Lookup.Tween<T>
+export type Bezier<T> = Lookup.Bezier<T>
+export type Oscillator<T> = Lookup.Oscillator<T>
+export type BatchAnimation<T> = Lookup.BatchAnimation<T>
 
 return {
 	GetUI_3D = function(ScreenGui)
