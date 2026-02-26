@@ -1,13 +1,135 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[CinnamonDocumentation]]></title><description><![CDATA[Obsidian digital garden]]></description><link>http://github.com/dylang/node-rss</link><image><url>site-lib/media/favicon.png</url><title>CinnamonDocumentation</title><link></link></image><generator>Webpage HTML Export plugin for Obsidian</generator><lastBuildDate>Tue, 10 Feb 2026 07:00:10 GMT</lastBuildDate><atom:link href="site-lib/rss.xml" rel="self" type="application/rss+xml"/><pubDate>Tue, 10 Feb 2026 07:00:07 GMT</pubDate><ttl>60</ttl><dc:creator></dc:creator><item><title><![CDATA[Cinnamon]]></title><description><![CDATA[Members:<a class="internal-link" data-href="API/Interfaces/Animation.md" href="api/interfaces/animation.html" target="_self" rel="noopener nofollow">Animation</a> - Methods for creating and handling animation<br>
-<a class="internal-link" data-href="API/Interfaces/Layout.md" href="api/interfaces/layout.html" target="_self" rel="noopener nofollow">Layout</a> - Handles layouts and provides template layoutsMethods:GetUI_3D -&gt; UIContainerfunction Cinnamon.GetUI_3D(ScreenGui) : UIContainer Clears out and destroys child objects without destroying the container
-NewContainer -&gt; UIContainerfunction Cinnamon.NewContainer( ScreenGui, Origin : CFrame
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[CinnamonDocumentation]]></title><description><![CDATA[Obsidian digital garden]]></description><link>http://github.com/dylang/node-rss</link><image><url>site-lib/media/favicon.png</url><title>CinnamonDocumentation</title><link></link></image><generator>Webpage HTML Export plugin for Obsidian</generator><lastBuildDate>Thu, 26 Feb 2026 03:23:36 GMT</lastBuildDate><atom:link href="site-lib/rss.xml" rel="self" type="application/rss+xml"/><pubDate>Thu, 26 Feb 2026 03:23:27 GMT</pubDate><ttl>60</ttl><dc:creator></dc:creator><item><title><![CDATA[Animation]]></title><description><![CDATA[Animations are created using &lt;animation&gt;
+An animation can either be a tween, spring, bezier or oscillatorexample of a animation&lt;animation&gt; | ID : "spring_0" | Type : "Spring" | Instance : node_1 | Props : { ["Goal"] : &lt;cframe&gt;([&lt;vec3&gt;([0,0,0]),&lt;vec3&gt;([1,0,0])]), ["Property"] : "Offset", ["Damping"] : 0.5, ["Frequency"] : 1, ["Response"] : -1, ["Time"] : 1 }
+&lt;/animation&gt;
+this matches how you'd use <a class="internal-link" data-href="API/Interfaces/Animation" href="api/interfaces/animation.html" target="_self" rel="noopener nofollow">Cinnamon.Animation.Animate()</a>Animations on compilation are disabled, so to play them you'd have to set their enabled property true after compilationlocal Import = Cinnamon.Compile(source,reference) Import["spring_0"].Enabled = true
+Batch animations allow you to animate multiple objects at the same time<br>
+Like how you'd use <a class="internal-link" data-href="API/Interfaces/Animation" href="api/interfaces/animation.html" target="_self" rel="noopener nofollow">Cinnamon.Animation.BatchAnimation()</a>batch animations are created using &lt;batchanimation&gt;&lt;batchanimation&gt; | ID : "batch" | Instances : [node_0,node_1] | Props : { ["EasingStyle"] : "Sine", ["EasingDirection"] : "In" } | GroupData : { ["Goal"] = [&lt;cframe&gt;([0,0,5]),&lt;cframe&gt;([0,5,10])] } | Type : "Tween"
+&lt;/batchanimation&gt;
+<br>Batch Animations are also disabled on compilation, so to play them you'd have to call <a class="internal-link" data-href="API/Objects/Animatables" href="api/objects/animatables.html" target="_self" rel="noopener nofollow">BatchAnimation.SetEnabled()</a>local Import = Cinnamon.Compile(source,reference) Import["batch"].SetEnabled(true)
+Timelines allow for multiple animations to be grouped togethera new entry is represented as ```| [Duration] -&gt; {}
+a map is used to describe the changes made to the animation's properties before doing the next animation
+Timeline entries are played from top to bottom, using the attached animation as the first animation played&lt;animation&gt; | ID : "tween_0" | Type : "Tween" | Instance : node_1 | Props : { ["Goal"] : &lt;prop&gt;(layout_0,1), ["Property"] : "Offset", ["EasingDirection"] : "In", ["EasingStyle"] : "Sine", ["Time"] : 5 }
+&lt;/animation&gt; &lt;timeline&gt; | ID : "timeline_0" | Animation : tween_0 | [1] -&gt; { ["Goal"] : &lt;cframe&gt;([0,10,5]), ["EasingStyle"] : "Back", ["EasingDirection"] : "InOut" } | [1] -&gt; { ["Goal"] : &lt;cframe&gt;([0,0,0]) } &lt;/timeline&gt;
+Timelines attach themselves to the animation, so it plays when the animation plays<br>Previous <a class="internal-link" data-href="Template_file_guide/Layouts" href="template_file_guide/layouts.html" target="_self" rel="noopener nofollow">Layouts</a>]]></description><link>template_file_guide/animation.html</link><guid isPermaLink="false">Template_file_guide/Animation.md</guid><pubDate>Thu, 26 Feb 2026 03:13:35 GMT</pubDate></item><item><title><![CDATA[Layouts]]></title><description><![CDATA[Template files precompute layouts on compilation. So they aren't dynamically created.Example of a layout&lt;layout&gt; | ID : "layout_0" | Callback : &lt;ref&gt;("Radial") | Elements : [node_1] | Props : { ["Distance"] : 10, ["Padding"] : &lt;rad&gt;(5), ["Origin"] : &lt;prop&gt;(node_0,"Origin"), ["StartAngle"] : 0, ["Axis"] : &lt;vec3&gt;([0,1,0]) }
+&lt;/layout&gt;
+Layouts computes its cframe values using the callback you provide for it.
+The callback being a function in your reference table.callbacks must include 2 arguments
+elements - a table of elements
+Props - a table/value thats inputted into your callback
+Heres how it would be usedlocal Source = require(script.["Template.cinm"])
+local Reference = { Radial = Cinnamon.Layout.Radial
+}
+local Import = Cinnamon.Compile(Source,Reference) Cinnamon.Layout.ApplyLayout(Import["Container"].Elements,Import["layout_0"]) Previous <a class="internal-link" data-href="Template_file_guide/Containers_&amp;_elements" href="template_file_guide/containers_&amp;_elements.html" target="_self" rel="noopener nofollow">Containers &amp; Elements</a><br>
+Next <a class="internal-link" data-href="Template_file_guide/Animation" href="template_file_guide/animation.html" target="_self" rel="noopener nofollow">Animation</a>]]></description><link>template_file_guide/layouts.html</link><guid isPermaLink="false">Template_file_guide/Layouts.md</guid><pubDate>Thu, 26 Feb 2026 02:45:00 GMT</pubDate></item><item><title><![CDATA[Containers_&_elements]]></title><description><![CDATA[Cinnamon objects are created using blocksformatted as&lt;block&gt; | Property : value
+&lt;/block&gt;
+Start and end markers must have the same name&lt;container&gt; and &lt;screencontainer&gt; are used to construct UIcontainers and Screen containers accordingly.
+UIContainer example
+&lt;container&gt; | ID : "containerID" | Origin : &lt;cframe&gt;([0,0,0]) | UI : &lt;ref&gt;("UI")
+&lt;/container&gt; Screen Container Example
+&lt;screencontainer&gt; | ID : "ScreenContainer123" | DisplayDistance : 12 | UI : &lt;ref&gt;("UI")
+&lt;/screencontainer&gt;
+you can also parent a UIContainer to another UIContainer&lt;container&gt; | ID : "container_1" | Origin : &lt;cframe&gt;([0,0,0]) | UI : &lt;ref&gt;("UI")
+&lt;/container&gt; &lt;container&gt; | ID : "container_2" | Parent : container_1 | Origin : &lt;cframe&gt;([0,0,0]) | UI : &lt;ref&gt;("UI")
+&lt;/container&gt;
+Elements are created by using &lt;element&gt; inside either &lt;container&gt; &lt;screencontainer&gt;
+example:&lt;container&gt; | ID : "node_0" | Origin : &lt;cframe&gt;([0, 10, 0]) | UI : &lt;ref&gt;("UI") &lt;element&gt; | UI : &lt;ref&gt;("Frame") | ID : "node_1" | Offset : &lt;cframe&gt;([0, 0, 0]) | Face : "Front" | Resolution : &lt;vec2&gt;([200,200]) &lt;/element&gt; &lt;/container&gt;
+Previous <a class="internal-link" data-href="Template_file_guide/Values" href="template_file_guide/values.html" target="_self" rel="noopener nofollow">Values</a><br>
+Next <a class="internal-link" data-href="Template_file_guide/Layouts" href="template_file_guide/layouts.html" target="_self" rel="noopener nofollow">Layouts</a>]]></description><link>template_file_guide/containers_&amp;_elements.html</link><guid isPermaLink="false">Template_file_guide/Containers_&amp;_elements.md</guid><pubDate>Thu, 26 Feb 2026 02:32:07 GMT</pubDate></item><item><title><![CDATA[Values]]></title><description><![CDATA[Templates have 6 primitive values
+Identifiers
+Strings
+numbers
+function calls
+Arrays
+Maps
+These are used to represent values in luauStrings are created using 2 " surrounding its contents| ID : "Testing123"
+Numbers are directly written just like luau| DisplayDistance : 123
+Identifiers are created when defining a cinnamon object using the ID property&lt;Container&gt; | ID : "Test123"
+&lt;/Container&gt;
+in this example a new identifier is created called Test123 which represents a UIContainer.
+Identifiers can then be later referenced further down the template.Identifiers cannot be referenced before they're definedinvalid as its referenced before it exists&lt;Container&gt; | ID : "Test456" | Parent : Test123
+&lt;/Container&gt; &lt;Container&gt; | ID : "Test123"
+&lt;/Container&gt;
+function calls are formatted as &lt;functionName&gt;(Arguments)there are currently 6 functions available
+&lt;ref&gt;(string) - Gets a value from reference table
+&lt;rad&gt;(number) - Converts number (in degrees) to radians
+&lt;prop&gt;(identifier) - Gets property of cinnamon object
+&lt;vec3&gt;([number]) - creates a vector3
+&lt;vec2&gt;([number]) - creates a vector2
+&lt;cframe&gt;([number] | [vec3]) - creates a cframe Example:&lt;container&gt; | ID : "container_2" | Parent : container_1 | Origin : &lt;cframe&gt;([0,0,0]) | UI : &lt;ref&gt;("UI")
+&lt;/container&gt;
+Arrays are formatted as [itemA,ItemB,ItemC]
+These represent tables used as arrays in luauMaps are created using curly brackets{ ["Index"] : Value, ["Index2"] : Value2,
+}
+These represent tables in luauPrevious <a class="internal-link" data-href="Template_file_guide/Headers" href="template_file_guide/headers.html" target="_self" rel="noopener nofollow">Headers</a><br>
+Next <a class="internal-link" data-href="Template_file_guide/Containers_&amp;_elements" href="template_file_guide/containers_&amp;_elements.html" target="_self" rel="noopener nofollow">Containers &amp; elements</a>]]></description><link>template_file_guide/values.html</link><guid isPermaLink="false">Template_file_guide/Values.md</guid><pubDate>Thu, 26 Feb 2026 02:27:15 GMT</pubDate></item><item><title><![CDATA[Headers]]></title><description><![CDATA[Header Files are meta data that hold information like the version of cinnamon and other data.
+Primarily meant to be used for editors reading the file.header example:&lt;Header&gt; | version : "0.2"
+&lt;/Header&gt;
+headers dont construct anythingPrevious <a class="internal-link" data-href="Template_file_guide/Getting_started" href="template_file_guide/getting_started.html" target="_self" rel="noopener nofollow">Getting started</a><br>
+Next <a class="internal-link" data-href="Template_file_guide/Values" href="template_file_guide/values.html" target="_self" rel="noopener nofollow">Values</a>]]></description><link>template_file_guide/headers.html</link><guid isPermaLink="false">Template_file_guide/Headers.md</guid><pubDate>Thu, 26 Feb 2026 02:26:02 GMT</pubDate></item><item><title><![CDATA[Getting_started]]></title><description><![CDATA[Template files are structured markup files how cinnamon objects are structured and assembled.Instead of creating large constructor methods, you define your object structure using cinnamon's template file format.
+These templates can be compiled at run time to create active cinnamon objects.template files use the extension .cinm to differentiate themselves from normal module scriptsCinnamon template file source:&lt;header&gt; | version : "0.2"
+&lt;/header&gt; &lt;container&gt; | ID : "node_0" | Origin : &lt;cframe&gt;([ 0, 10, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 ]) | UI : &lt;ref&gt;("UI") &lt;element&gt; | UI : &lt;ref&gt;("Frame") | ID : "node_1" | Offset : &lt;cframe&gt;([0, 0, 0]) | Face : "Front" | Resolution : &lt;vec2&gt;([200,200]) &lt;/element&gt; &lt;/container&gt; &lt;animation&gt; | ID : "spring_0" | Type : "Spring" | Instance : node_1 | Props : { ["Goal"] : &lt;cframe&gt;([&lt;vec3&gt;([0,0,0]),&lt;vec3&gt;([1,0,0])]), ["Property"] : "Offset", ["Damping"] : 0.5, ["Frequency"] : 1, ["Response"] : -1, ["Time"] : 1 }
+&lt;/animation&gt; Require the file your compiling
+local Template = require(script["Template.cinm"]) make the reference table (must match the strings passed into &lt;ref&gt;() calls)
+local ScreenGui = PlayerGui:WaitForChild("ScreenGui")
+local Frame = ScreenGui.Frame local template = require(script["Template.cinm"]) local Reference = { UI = ScreenGui, Frame = Frame, Radial = Cinnamon.Layout.Radial, Frame2 = ScreenGui.Frame2
+} Use Cinnamon.Compile to generate from file
+local Import = Cinnamon.Compile(template,Reference) local Container = Import["node_0"]
+local Spring : Cinnamon.Spring&lt;CFrame&gt; = Import["spring_0"] Maintability - this keeps runtime logic seperate from construction
+Reusability - you can create reusable components without worrying about runtime logic
+Cleaner architecture - Instead of using large construction functions, this keeps construction declarative and readable
+Editor Integration - this allows for external tools or visual editors to generate .cinm files, allowing for UI design without scripting knowledge
+Next <a class="internal-link" data-href="Template_file_guide/Headers" href="template_file_guide/headers.html" target="_self" rel="noopener nofollow">Headers</a>]]></description><link>template_file_guide/getting_started.html</link><guid isPermaLink="false">Template_file_guide/Getting_started.md</guid><pubDate>Thu, 26 Feb 2026 02:12:08 GMT</pubDate></item><item><title><![CDATA[Element]]></title><description><![CDATA[Stores and displays your UI in space.Properties:Enabled : Boolean
+Determines if your UI is being displayed or not
+Debug : Boolean
+Adds/Removes the element from the Debug visualizer
+Offset: CFrame
+Determines position and rotation relative to its parent container
+Resolution: Vector2
+Determines the size of your UI in pixels
+Members:UI : GuiObject
+The UI thats being displayed
+Parent2D : GuiObject | ScreenGui
+The UI's parent UI
+Instance : Part
+The physical Part that holds your UI
+Container: UIContainer | ScreenContainer
+The parent Container of the element
+Type : string
+Used for typechecking
+]]></description><link>api/objects/element.html</link><guid isPermaLink="false">API/Objects/Element.md</guid><pubDate>Thu, 26 Feb 2026 01:00:44 GMT</pubDate></item><item><title><![CDATA[Animatables]]></title><description><![CDATA[Animatable (Base class, not usable)type Animatable&lt;T&gt; = { Goal : T, Type : "Tween" | "Spring" | "Bezier" | "Oscillator", Instance : Instance, Property : string, Enabled : boolean, Speed : number, Destroy : (Animatable&lt;T&gt;), Time : number, Origin : T, }
+Tweenstype Tween&lt;T&gt; = Animatable&lt;T&gt; &amp; { EasingDirection : string, EasingStyle : string, Time : number, Origin : T, Type : "Tween"
+}
+Springstype Spring&lt;T&gt; = Animatable&lt;T&gt; &amp; { k1 : number, k2 : number, k3 : number, Previous : T, Velocity : T, Type : "Spring"
+}
+Bezierstype Bezier&lt;T&gt; = Tween&lt;T&gt; &amp; { P1 : T, P2 : T, Type : "Bezier"
+}
+Oscillatorstype Oscillator&lt;T&gt; = Tween&lt;T&gt; &amp; { Type : "Oscillator", Frequency : number, Phase : number, WaveForm : (Time : number,Frequency : number,Phase : number) -&gt; number
+}
+Batch Animationtype BatchAnimation&lt;T&gt; = {Animatable&lt;T&gt;} &amp; { SetEnabled : (BatchAnimation&lt;T&gt;,Enabled : Boolean) -&gt; nil, SetGoals : (BatchAnimation&lt;T&gt;,Goal : {T}) -&gt; nil,
+}
+AnimTimeline (internal, not useable)type AnimTimeline = { IndexPointer : number, BaseSpeed : number, InitStates : {[string] : any},
+} &amp; {{Time : number} &amp; {[string] : any}}
+]]></description><link>api/objects/animatables.html</link><guid isPermaLink="false">API/Objects/Animatables.md</guid><pubDate>Thu, 26 Feb 2026 00:59:26 GMT</pubDate></item><item><title><![CDATA[Animation]]></title><description><![CDATA[Methods for creating and managing <a class="internal-link" data-href="API/Objects/Animatables.md" href="api/objects/animatables.html" target="_self" rel="noopener nofollow">animations</a>.Methods:
+Animate -&gt; Animatablefunction Animate&lt;T&gt;( Instance : Instance | UI3D_Object, Props : { Type : : "Tween" | "Spring" | "Bezier" | "Oscillator", Property : string, Goal : T, Time : number, -- tween EasingDirection : string, EasingStyle : string, -- Bezier EasingDirection : string, EasingStyle : string, P1 : T, P2 : T, -- Spring Frequency : number, Damping : number, Response : number, -- Oscillator EasingDirection : string, EasingStyle : string, Frequency : number, WaveForm : WaveForm Phase : number, }
+) : Animatable&lt;T&gt; Creates a Animation of your choosing
+Properties inputted depend on the type of animation
+BatchAnimation -&gt; BatchAnimationfunction BatchAnimation&lt;T&gt;( AnimationType : "Tween" | "Spring" | "Bezier" | "Oscillator", _Instances : {Instance | UI3D_Object}, Props : {Property : string}, GroupData : {Goal : {T},P1 : {T},P2 : {T},Phase : {number}}
+) : BatchAnimation Creates batch animation
+AttachTimeline -&gt; AnimTimelinefunction AttachTimeline( Animatable : Animatable&lt;T&gt;, Timeline : {{Time : number} &amp; {[string] : any}}
+) -&gt; AnimTimeline Attaches a timeline table to a animatable
+Time represents duration not timestamps
+SetGoal -&gt; nilfunction SetGoal&lt;T&gt;(Animated : Animatable&lt;T&gt;,Goal : T) : nil Sets the goal of a single animation
+Reset -&gt; nilfunction Reset&lt;T&gt;(Animated : Animatable&lt;T&gt;) : nil Resets an animation
+]]></description><link>api/interfaces/animation.html</link><guid isPermaLink="false">API/Interfaces/Animation.md</guid><pubDate>Thu, 26 Feb 2026 00:57:51 GMT</pubDate></item><item><title><![CDATA[Cinnamon]]></title><description><![CDATA[Members:<a class="internal-link" data-href="API/Interfaces/Animation.md" href="api/interfaces/animation.html" target="_self" rel="noopener nofollow">Animation</a> - Methods for creating and handling animation<br>
+<a class="internal-link" data-href="API/Interfaces/Layout.md" href="api/interfaces/layout.html" target="_self" rel="noopener nofollow">Layout</a> - Handles layouts and provides template layoutsMethods:GetUI_3D -&gt; UIContainerfunction GetUI_3D(ScreenGui) : UIContainer Clears out and destroys child objects without destroying the container
+NewContainer -&gt; UIContainerfunction NewContainer( ScreenGui, Origin : CFrame
 ) : UIContainer Creates a new UI container
-NewScreenContainer -&gt; ScreenContainerfunction Cinnamon.NewScreenContainer( ScreenGui, DisplayDistance : number
+NewScreenContainer -&gt; ScreenContainerfunction NewScreenContainer( ScreenGui, DisplayDistance : number
 ) : ScreenContainer Creates a new ScreenContainer
-Destroy -&gt; nilfunction Cinnamon.Destroy( UI3D_Object : {Destroy : (T) -&gt; nil},
+Destroy -&gt; nilfunction Destroy( UI3D_Object : {Destroy : (T) -&gt; nil},
 ) : nil Deletes anything with a internal destroy method
-]]></description><link>api/interfaces/cinnamon.html</link><guid isPermaLink="false">API/Interfaces/Cinnamon.md</guid><pubDate>Sat, 07 Feb 2026 02:35:01 GMT</pubDate></item><item><title><![CDATA[Intro]]></title><description><![CDATA[(note: its recommended to view this doc using obsidian)
-Cinnamon is a open source 3d UI framework to give developers a versatile and richer UI framework that goes beyond other 3d ui libraries.The aim of this framework is to give developers more creative control when making user interfaces in 3d, with support for things like animations, layouts, and reusable components.For more information check out the API
+Compile -&gt; {string : UI3D_Object}function Compile(Source : string,Reference : {[string] : any}) generates cinnamon objects using template source code and a table of external references
+]]></description><link>api/interfaces/cinnamon.html</link><guid isPermaLink="false">API/Interfaces/Cinnamon.md</guid><pubDate>Thu, 26 Feb 2026 00:57:29 GMT</pubDate></item><item><title><![CDATA[Intro]]></title><description><![CDATA[Cinnamon is a open source 3d UI framework to give developers a versatile and richer UI framework that goes beyond other 3d ui libraries.The aim of this framework is to give developers more creative control when making user interfaces in 3d, with support for things like animations, layouts, and reusable components.For more information check out the API
 Declarative hierarchy
 Cinnamon introduces Elements, which represents the individual UIs that are being displayed.
 Each Element is stored in a Container.
@@ -29,12 +151,14 @@ Cinnamon.Layout.ApplyLayout(Container.Elements,Layout) Since layouts are just a 
 end Cinnamon.Layout.ApplyLayout(Container.Elements,Custom(Container.Elements)) Animations
 Using the many animation options, Cinnamon allows developers to animate elements how ever they want.
 Cinnamon allows you to either animate using Tweens, Bezier curves, Springs or Oscillators
-local Tween = Cinnamon.Animation.Tween(Element.Instance,"CFrame",CFrame.new(0,5,0),"Sine","OutIn",1) Tween.Enabled = true
+local Tween = Cinnamon.Animation.Animate(Element,{ Type = "Tween" Property = "CFrame", Goal = CFrame.new(0,5,0), EasingStyle = "Sine", EasingDirection = "OutIn", Time = 1
+}) Tween.Enabled = true
 Animations are considered objects as well, That means you only have to declare a Animation once to play it.
 This lets you dynamically change how the animation playslocal Frequency = 1
 local Damping = 0.5
 local Response = 0.2
-local Spring = Cinnamon.Animation.Spring(Element.Instance,"CFrame",CFrame.new(0,5,0),Frequency,Damping,Response,1) Spring.Enabled = true
+local Spring = Cinnamon.Animation.Animate(Element,{ Type = "Spring", Property = "Offset", Goal = CFrame.new(0,5,0), Frequency = Frequency, Damping = Damping, Response = Response, Time = 1,
+}) Spring.Enabled = true
 task.wait() Cinnamon.Animation.SetGoal(Spring,CFrame.new(2,0,2)) We can also animate multiple elements, giving more creative options for our componentslocal ScreenGui = PlayerGui:WaitForChild("ScreenGui") local function BuildCarousel(Container : Cinnamon.UIContainer,ItemCount : number,Radius : number,Center : CFrame) local Carousel = Container:NewContainer(Container.UI,Center) for i = 1,ItemCount do local NewFrame = Instance.new("Frame",ScreenGui) NewFrame.Name = string.char(64 + i) NewFrame.Size = UDim2.fromScale(1,1) NewFrame.BackgroundColor3 = Color3.new(1,1,1) Carousel:Element({ UI = NewFrame, Offset = CFrame.new(0,0,0), Resolution = Vector2.new(800,600) }) end local A = Cinnamon.Layout.Radial(Carousel.Elements,{ Origin = Center, Distance = Radius, StartAngle = 0, Padding = math.rad(5), Axis = Vector3.new(0,1,0) }) local B = Cinnamon.Layout.Radial(Carousel.Elements,{ Origin = Center, Distance = Radius, StartAngle = 30, Padding = math.rad(5), Axis = Vector3.new(0,1,0) }) local C = Cinnamon.Layout.Radial(Carousel.Elements,{ Origin = Center, Distance = Radius, StartAngle = 30, Padding = math.rad(5), Axis = Vector3.new(0,1,0) }) Cinnamon.Layout.ApplyLayout(Carousel.Elements,A) return Carousel,{A,B,C}
 end local Container = Cinnamon.NewContainer(ScreenGui,CFrame.new(0,5,0))
 local Carousel,KeyframeTable = BuildCarousel(Container,11,10.75,Container.Origin:ToWorldPosition(CFrame.new(0,0,-10))) local Forwards = Cinnamon.Animation.BatchAnimation("Tween",Carousel.Elements,{ Property = "CFrame", EasingStyle = "Quad", EasingDirection = "InOut"
@@ -44,21 +168,7 @@ local Carousel,KeyframeTable = BuildCarousel(Container,11,10.75,Container.Origin
 }) Forwards:SetEnabled(true)
 task.wait(1)
 Cinnamon.Layout.ApplyLayout(Carousel.Elements,KeyframeTable[1])
-Backwards:SetEnabled(true) ]]></description><link>intro.html</link><guid isPermaLink="false">Intro.md</guid><pubDate>Sat, 07 Feb 2026 02:31:49 GMT</pubDate></item><item><title><![CDATA[Element]]></title><description><![CDATA[Stores and displays your UI in space.Properties:Enabled : Boolean
-Determines if your UI is being displayed or not
-Debug : Boolean
-Adds/Removes the element from the Debug visualizer
-Members:UI : GuiObject
-The UI thats being displayed
-Parent2D : GuiObject | ScreenGui
-The UI's parent UI
-Instance : Part
-The physical Part that holds your UI
-Container: UIContainer | ScreenContainer
-The parent Container of the element
-Type : string
-Used for typechecking
-]]></description><link>api/objects/element.html</link><guid isPermaLink="false">API/Objects/Element.md</guid><pubDate>Sat, 07 Feb 2026 02:25:59 GMT</pubDate></item><item><title><![CDATA[Layout]]></title><description><![CDATA[Handles layouts and provides template layoutsMethods:ApplyLayout -&gt; nilfunction ApplyLayout( Elements : {Element}, Layout : {CFrame}
+Backwards:SetEnabled(true) ]]></description><link>intro.html</link><guid isPermaLink="false">Intro.md</guid><pubDate>Thu, 26 Feb 2026 00:38:41 GMT</pubDate></item><item><title><![CDATA[Layout]]></title><description><![CDATA[Handles layouts and provides template layoutsMethods:ApplyLayout -&gt; nilfunction ApplyLayout( Elements : {Element}, Layout : {CFrame}
 ) : nil Applies the layout to a table of elements
 Templates:
 Radial - Places elements in a ring formationfunction Radial(Elements : {Lookup.Element}, Props : { Origin : CFrame, Distance: number, StartAngle : number, Padding : number, Axis : Vector3 }
@@ -71,19 +181,7 @@ Quad bezier - Places Elements along a bezier curvefunction QuadBezier(Elements :
 )
 PlaceFromUDim2 - Places Elements according to its UI position, relative to its container originfunction PlaceFromUDim2( Elements : {Lookup.Element}, DisplayDistance
 )
-]]></description><link>api/interfaces/layout.html</link><guid isPermaLink="false">API/Interfaces/Layout.md</guid><pubDate>Sat, 07 Feb 2026 02:25:28 GMT</pubDate></item><item><title><![CDATA[Animation]]></title><description><![CDATA[Methods for creating and managing <a class="internal-link" data-href="API/Objects/Animatables.md" href="api/objects/animatables.html" target="_self" rel="noopener nofollow">animations</a>.Methods:
-Tween -&gt; Tweenfunction Animation.Tween&lt;T&gt;( _Instance : Instance, Property : string, Goal : T, EasingDirection : string, EasingStyle : string, Speed : number
-) : Tween&lt;T&gt; Creates tween animation
-Spring -&gt; Spring function Spring&lt;T&gt;( _Instance : Instance, Property : string, Goal : T, Frequency : number, Damping : number, Response : number, Speed : number ) : Spring&lt;T&gt; Creates spring animation
-Bezier -&gt; Bezierfunction Bezier&lt;T&gt;( _Instance : Instance, Property : string, Goal : T, EasingDirection : string, EasingStyle : string, P1 : T, P2 : T, Speed : number
-) : Bezier&lt;T&gt; Creates bezier animation
-Oscillator -&gt; Oscillatorfunction Oscillator&lt;T&gt;( _Instance : Instance, Property : string, Goal : T, Frequency : number, Phase : number, EasingDirection : string, EasingStyle : string, WaveForm : WaveForm, Speed : number
-) : Oscillator&lt;T&gt; Creates oscillation animation
-BatchAnimation -&gt; BatchAnimationfunction BatchAnimation&lt;T&gt;( AnimationType : "Tween" | "Spring" | "Bezier" | "Oscillator", _Instances : {Instance | Element}, Props : {Property : string}, GroupData : {Goal : {T},P1 : {T},P2 : {T},Phase : {number}}
-) : BatchAnimation Creates batch animation
-SetGoal -&gt; nilfunction SetGoal&lt;T&gt;(Animated : Animatable&lt;T&gt;,Goal : T) -&gt; nil Sets the goal of a single animation
-Reset -&gt; nilfunction Reset&lt;T&gt;(Animated : Animatable&lt;T&gt;) -&gt; nil Resets an animation
-]]></description><link>api/interfaces/animation.html</link><guid isPermaLink="false">API/Interfaces/Animation.md</guid><pubDate>Sat, 07 Feb 2026 02:15:00 GMT</pubDate></item><item><title><![CDATA[Screen Container]]></title><description><![CDATA[Holds <a class="internal-link" data-href="API/Objects/Element.md" href="api/objects/element.html" target="_self" rel="noopener nofollow">Elements</a> and positions them on the screen.Properties:Enabled : Boolean
+]]></description><link>api/interfaces/layout.html</link><guid isPermaLink="false">API/Interfaces/Layout.md</guid><pubDate>Sat, 07 Feb 2026 02:25:28 GMT</pubDate></item><item><title><![CDATA[Screen Container]]></title><description><![CDATA[Holds <a class="internal-link" data-href="API/Objects/Element.md" href="api/objects/element.html" target="_self" rel="noopener nofollow">Elements</a> and positions them on the screen.Properties:Enabled : Boolean
 Enables/Disables child objects
 Debug : Boolean
 Adds/Removes itself and its child objects from the debug visualiser
@@ -101,18 +199,7 @@ UDim2ToCFrame -&gt; CFramefunction Container:UDim2ToCFrame( Position : UDim2, Vi
 Partsize -&gt; Vector3
 function Container:UDim2ToCFrame( Position : UDim2, ViewPortSize : Vector2,
 ) : CFrame Calculate how large a element should be using position and viewport size
-]]></description><link>api/objects/screen-container.html</link><guid isPermaLink="false">API/Objects/Screen Container.md</guid><pubDate>Sat, 07 Feb 2026 01:55:43 GMT</pubDate></item><item><title><![CDATA[Animatables]]></title><description><![CDATA[Animatable (Base class, not usable)type Animatable&lt;T&gt; = { Goal : T, Type : "Tween" | "Spring" | "Bezier" | "Oscillator", Instance : Instance, Property : string, Enabled : boolean, Speed : number, Destroy : (Animatable&lt;T&gt;), Time : number, Origin : T, }
-Tweens:type Tween&lt;T&gt; = Animatable&lt;T&gt; &amp; { EasingDirection : string, EasingStyle : string, Time : number, Origin : T, Type : "Tween"
-}
-Springs:type Spring&lt;T&gt; = Animatable&lt;T&gt; &amp; { k1 : number, k2 : number, k3 : number, Previous : T, Velocity : T, Type : "Spring"
-}
-Beziers:type Bezier&lt;T&gt; = Tween&lt;T&gt; &amp; { P1 : T, P2 : T, Type : "Bezier"
-}
-Oscillators:type Oscillator&lt;T&gt; = Tween&lt;T&gt; &amp; { Type : "Oscillator", Frequency : number, Phase : number, WaveForm : (Time : number,Frequency : number,Phase : number) -&gt; number
-}
-Batch Animation:type BatchAnimation&lt;T&gt; = {Animatable&lt;T&gt;} &amp; { SetEnabled : (BatchAnimation&lt;T&gt;,Enabled : Boolean) -&gt; nil, SetGoals : (BatchAnimation&lt;T&gt;,Goal : {T}) -&gt; nil,
-}
-]]></description><link>api/objects/animatables.html</link><guid isPermaLink="false">API/Objects/Animatables.md</guid><pubDate>Sat, 07 Feb 2026 01:46:42 GMT</pubDate></item><item><title><![CDATA[UI Container]]></title><description><![CDATA[Holds <a class="internal-link" data-href="API/Objects/Element.md" href="api/objects/element.html" target="_self" rel="noopener nofollow">Elements</a> and positions them in world position.Properties:Enabled : Boolean
+]]></description><link>api/objects/screen-container.html</link><guid isPermaLink="false">API/Objects/Screen Container.md</guid><pubDate>Sat, 07 Feb 2026 01:55:43 GMT</pubDate></item><item><title><![CDATA[UI Container]]></title><description><![CDATA[Holds <a class="internal-link" data-href="API/Objects/Element.md" href="api/objects/element.html" target="_self" rel="noopener nofollow">Elements</a> and positions them in world position.Properties:Enabled : Boolean
 Enables/Disables child objects
 Debug : Boolean
 Adds/Removes itself and its child objects from the debug visualiser
