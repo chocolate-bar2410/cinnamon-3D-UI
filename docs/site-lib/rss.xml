@@ -1,4 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[CinnamonDocumentation]]></title><description><![CDATA[Obsidian digital garden]]></description><link>http://github.com/dylang/node-rss</link><image><url>site-lib/media/favicon.png</url><title>CinnamonDocumentation</title><link></link></image><generator>Webpage HTML Export plugin for Obsidian</generator><lastBuildDate>Thu, 26 Feb 2026 03:23:36 GMT</lastBuildDate><atom:link href="site-lib/rss.xml" rel="self" type="application/rss+xml"/><pubDate>Thu, 26 Feb 2026 03:23:27 GMT</pubDate><ttl>60</ttl><dc:creator></dc:creator><item><title><![CDATA[Animation]]></title><description><![CDATA[Animations are created using &lt;animation&gt;
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[CinnamonDocumentation]]></title><description><![CDATA[Obsidian digital garden]]></description><link>http://github.com/dylang/node-rss</link><image><url>site-lib/media/favicon.png</url><title>CinnamonDocumentation</title><link/></image><generator>Webpage HTML Export plugin for Obsidian</generator><lastBuildDate>Sat, 28 Feb 2026 01:15:23 GMT</lastBuildDate><atom:link href="site-lib/rss.xml" rel="self" type="application/rss+xml"/><pubDate>Sat, 28 Feb 2026 01:15:21 GMT</pubDate><ttl>60</ttl><dc:creator/><item><title><![CDATA[Values]]></title><description><![CDATA[Templates have 6 primitive values
+Identifiers
+Strings
+numbers
+function calls
+Arrays
+Maps
+These are used to represent values in luauStrings are created using 2 " surrounding its contents| ID : "Testing123"
+Numbers are directly written just like luau| DisplayDistance : 123
+Identifiers are created when defining a cinnamon object using the ID property&lt;Container&gt; | ID : "Test123"
+&lt;/Container&gt;
+in this example a new identifier is created called Test123 which represents a UIContainer.
+Identifiers can then be later referenced further down the template.Identifiers cannot be referenced before they're definedinvalid as its referenced before it exists&lt;Container&gt; | ID : "Test456" | Parent : Test123
+&lt;/Container&gt; &lt;Container&gt; | ID : "Test123"
+&lt;/Container&gt;
+function calls are formatted as &lt;functionName&gt;(Arguments)there are currently 6 functions available
+&lt;ref&gt;(string) - Gets a value from reference table
+&lt;rad&gt;(number) - Converts number (in degrees) to radians
+&lt;prop&gt;(identifier) - Gets property of cinnamon object
+&lt;vec3&gt;([number]) - creates a vector3
+&lt;vec2&gt;([number]) - creates a vector2
+&lt;cframe&gt;([number] | [vec3]) - creates a cframe &lt;angles&gt;([number]) - creates a cframe using CFrame.Angles
+Example:&lt;container&gt; | ID : "container_2" | Parent : container_1 | Origin : &lt;cframe&gt;([0,0,0]) | UI : &lt;ref&gt;("UI")
+&lt;/container&gt;
+Arrays are formatted as [itemA,ItemB,ItemC]
+These represent tables used as arrays in luauMaps are created using curly brackets{ ["Index"] : Value, ["Index2"] : Value2,
+}
+These represent tables in luauPrevious <a class="internal-link" data-href="Template_file_guide/Headers" href="template_file_guide/headers.html" target="_self" rel="noopener nofollow">Headers</a><br>
+Next <a class="internal-link" data-href="Template_file_guide/Containers_&amp;_elements" href="template_file_guide/containers_&amp;_elements.html" target="_self" rel="noopener nofollow">Containers &amp; elements</a>]]></description><link>template_file_guide/values.html</link><guid isPermaLink="false">Template_file_guide/Values.md</guid><pubDate>Sat, 28 Feb 2026 00:52:36 GMT</pubDate></item><item><title><![CDATA[Headers]]></title><description><![CDATA[Header Files are meta data that hold information like the version of cinnamon.
+Primarily meant to be used for editors reading the file.header example:&lt;Header&gt; | version : "0.2"
+&lt;/Header&gt;
+headers dont construct anything themselves
+but must be included in your file to be valid, as files without Headers will not compile.Previous <a class="internal-link" data-href="Template_file_guide/Getting_started" href="template_file_guide/getting_started.html" target="_self" rel="noopener nofollow">Getting started</a><br>
+Next <a class="internal-link" data-href="Template_file_guide/Values" href="template_file_guide/values.html" target="_self" rel="noopener nofollow">Values</a>]]></description><link>template_file_guide/headers.html</link><guid isPermaLink="false">Template_file_guide/Headers.md</guid><pubDate>Sat, 28 Feb 2026 00:28:26 GMT</pubDate></item><item><title><![CDATA[Animation]]></title><description><![CDATA[Animations are created using &lt;animation&gt;
 An animation can either be a tween, spring, bezier or oscillatorexample of a animation&lt;animation&gt; | ID : "spring_0" | Type : "Spring" | Instance : node_1 | Props : { ["Goal"] : &lt;cframe&gt;([&lt;vec3&gt;([0,0,0]),&lt;vec3&gt;([1,0,0])]), ["Property"] : "Offset", ["Damping"] : 0.5, ["Frequency"] : 1, ["Response"] : -1, ["Time"] : 1 }
 &lt;/animation&gt;
 this matches how you'd use <a class="internal-link" data-href="API/Interfaces/Animation" href="api/interfaces/animation.html" target="_self" rel="noopener nofollow">Cinnamon.Animation.Animate()</a>Animations on compilation are disabled, so to play them you'd have to set their enabled property true after compilationlocal Import = Cinnamon.Compile(source,reference) Import["spring_0"].Enabled = true
@@ -34,38 +67,7 @@ you can also parent a UIContainer to another UIContainer&lt;container&gt; | ID :
 Elements are created by using &lt;element&gt; inside either &lt;container&gt; &lt;screencontainer&gt;
 example:&lt;container&gt; | ID : "node_0" | Origin : &lt;cframe&gt;([0, 10, 0]) | UI : &lt;ref&gt;("UI") &lt;element&gt; | UI : &lt;ref&gt;("Frame") | ID : "node_1" | Offset : &lt;cframe&gt;([0, 0, 0]) | Face : "Front" | Resolution : &lt;vec2&gt;([200,200]) &lt;/element&gt; &lt;/container&gt;
 Previous <a class="internal-link" data-href="Template_file_guide/Values" href="template_file_guide/values.html" target="_self" rel="noopener nofollow">Values</a><br>
-Next <a class="internal-link" data-href="Template_file_guide/Layouts" href="template_file_guide/layouts.html" target="_self" rel="noopener nofollow">Layouts</a>]]></description><link>template_file_guide/containers_&amp;_elements.html</link><guid isPermaLink="false">Template_file_guide/Containers_&amp;_elements.md</guid><pubDate>Thu, 26 Feb 2026 02:32:07 GMT</pubDate></item><item><title><![CDATA[Values]]></title><description><![CDATA[Templates have 6 primitive values
-Identifiers
-Strings
-numbers
-function calls
-Arrays
-Maps
-These are used to represent values in luauStrings are created using 2 " surrounding its contents| ID : "Testing123"
-Numbers are directly written just like luau| DisplayDistance : 123
-Identifiers are created when defining a cinnamon object using the ID property&lt;Container&gt; | ID : "Test123"
-&lt;/Container&gt;
-in this example a new identifier is created called Test123 which represents a UIContainer.
-Identifiers can then be later referenced further down the template.Identifiers cannot be referenced before they're definedinvalid as its referenced before it exists&lt;Container&gt; | ID : "Test456" | Parent : Test123
-&lt;/Container&gt; &lt;Container&gt; | ID : "Test123"
-&lt;/Container&gt;
-function calls are formatted as &lt;functionName&gt;(Arguments)there are currently 6 functions available
-&lt;ref&gt;(string) - Gets a value from reference table
-&lt;rad&gt;(number) - Converts number (in degrees) to radians
-&lt;prop&gt;(identifier) - Gets property of cinnamon object
-&lt;vec3&gt;([number]) - creates a vector3
-&lt;vec2&gt;([number]) - creates a vector2
-&lt;cframe&gt;([number] | [vec3]) - creates a cframe Example:&lt;container&gt; | ID : "container_2" | Parent : container_1 | Origin : &lt;cframe&gt;([0,0,0]) | UI : &lt;ref&gt;("UI")
-&lt;/container&gt;
-Arrays are formatted as [itemA,ItemB,ItemC]
-These represent tables used as arrays in luauMaps are created using curly brackets{ ["Index"] : Value, ["Index2"] : Value2,
-}
-These represent tables in luauPrevious <a class="internal-link" data-href="Template_file_guide/Headers" href="template_file_guide/headers.html" target="_self" rel="noopener nofollow">Headers</a><br>
-Next <a class="internal-link" data-href="Template_file_guide/Containers_&amp;_elements" href="template_file_guide/containers_&amp;_elements.html" target="_self" rel="noopener nofollow">Containers &amp; elements</a>]]></description><link>template_file_guide/values.html</link><guid isPermaLink="false">Template_file_guide/Values.md</guid><pubDate>Thu, 26 Feb 2026 02:27:15 GMT</pubDate></item><item><title><![CDATA[Headers]]></title><description><![CDATA[Header Files are meta data that hold information like the version of cinnamon and other data.
-Primarily meant to be used for editors reading the file.header example:&lt;Header&gt; | version : "0.2"
-&lt;/Header&gt;
-headers dont construct anythingPrevious <a class="internal-link" data-href="Template_file_guide/Getting_started" href="template_file_guide/getting_started.html" target="_self" rel="noopener nofollow">Getting started</a><br>
-Next <a class="internal-link" data-href="Template_file_guide/Values" href="template_file_guide/values.html" target="_self" rel="noopener nofollow">Values</a>]]></description><link>template_file_guide/headers.html</link><guid isPermaLink="false">Template_file_guide/Headers.md</guid><pubDate>Thu, 26 Feb 2026 02:26:02 GMT</pubDate></item><item><title><![CDATA[Getting_started]]></title><description><![CDATA[Template files are structured markup files how cinnamon objects are structured and assembled.Instead of creating large constructor methods, you define your object structure using cinnamon's template file format.
+Next <a class="internal-link" data-href="Template_file_guide/Layouts" href="template_file_guide/layouts.html" target="_self" rel="noopener nofollow">Layouts</a>]]></description><link>template_file_guide/containers_&amp;_elements.html</link><guid isPermaLink="false">Template_file_guide/Containers_&amp;_elements.md</guid><pubDate>Thu, 26 Feb 2026 02:32:07 GMT</pubDate></item><item><title><![CDATA[Getting_started]]></title><description><![CDATA[Template files are structured markup files how cinnamon objects are structured and assembled.Instead of creating large constructor methods, you define your object structure using cinnamon's template file format.
 These templates can be compiled at run time to create active cinnamon objects.template files use the extension .cinm to differentiate themselves from normal module scriptsCinnamon template file source:&lt;header&gt; | version : "0.2"
 &lt;/header&gt; &lt;container&gt; | ID : "node_0" | Origin : &lt;cframe&gt;([ 0, 10, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 ]) | UI : &lt;ref&gt;("UI") &lt;element&gt; | UI : &lt;ref&gt;("Frame") | ID : "node_1" | Offset : &lt;cframe&gt;([0, 0, 0]) | Face : "Front" | Resolution : &lt;vec2&gt;([200,200]) &lt;/element&gt; &lt;/container&gt; &lt;animation&gt; | ID : "spring_0" | Type : "Spring" | Instance : node_1 | Props : { ["Goal"] : &lt;cframe&gt;([&lt;vec3&gt;([0,0,0]),&lt;vec3&gt;([1,0,0])]), ["Property"] : "Offset", ["Damping"] : 0.5, ["Frequency"] : 1, ["Response"] : -1, ["Time"] : 1 }
 &lt;/animation&gt; Require the file your compiling
