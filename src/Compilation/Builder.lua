@@ -184,7 +184,7 @@ BuildMethods.Call = function(Builder : Lookup.BuildHelper,Node)
 
         ErrorHandling.LogAssert(NewCFrame ~= nil, "Compile", "CFrame has invalid arguments",Node.Line)
 
-        return CFrame
+        return NewCFrame
     elseif Name == "angles" then
         local Array = Builder:TraverseNode(Node.Arguments[1])
         local NewCFrame = CFrame.Angles(table.unpack(Array))
