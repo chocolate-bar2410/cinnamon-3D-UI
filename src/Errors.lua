@@ -11,8 +11,8 @@ module.ErrorLog = {}
 module.LogError = function(ErrorType,ErrorMessage,Line,Column)
     local Message = Messagetab[ErrorType]:format(ErrorMessage)
     
-    if Line and Column then
-        Message ..= ` @ Line {Line} Col {Column}`
+    if Line then
+        Message ..= Column and ` @ Line {Line} Col {Column}` or `@ Line {Line}`
     end
 
     table.insert(module.ErrorLog,Message)

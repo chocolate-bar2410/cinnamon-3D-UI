@@ -163,7 +163,8 @@ export type CompileToken = {
 }
 
 export type CompileNode = {
-	NodeType : "string"
+	NodeType : string,
+	Line : number
 }
 
 export type ParseHelper = {

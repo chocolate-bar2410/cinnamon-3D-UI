@@ -99,6 +99,8 @@ return {
 	Compile = function(Source,Reference)
 		local Objects = Compilation(Source, Reference)
 
+		if not Objects then return end
+
 		for _,v : Lookup.BaseContainer in Objects do
 			if not v.Type then continue end
 			if v.Type ~= "Container" and v.Type ~= "ScreenContainer" then continue end
