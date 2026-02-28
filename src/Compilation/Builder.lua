@@ -51,7 +51,8 @@ BuildMethods.element = function(Builder : Lookup.BuildHelper,Node,ContainerObj :
     Builder:TraverseTable(Properties)
 
     if Properties.Offset and typeof(Properties.Offset) ~= "CFrame" then
-        ErrorHandling.LogError("Compile", "Element offset must be CFrame",Node.Line)
+        print(Properties.Offset)
+        ErrorHandling.LogError("Compile", "Element Offset must be CFrame",Node.Line)
     end
 
     if Properties.Resolution and typeof(Properties.Resolution) ~= "Vector2" then
@@ -184,6 +185,13 @@ BuildMethods.Call = function(Builder : Lookup.BuildHelper,Node)
         ErrorHandling.LogAssert(NewCFrame ~= nil, "Compile", "CFrame has invalid arguments",Node.Line)
 
         return CFrame
+    elseif Name == "angles" then
+        local Array = Builder:TraverseNode(Node.Arguments[1])
+        local NewCFrame = CFrame.Angles(table.unpack(Array))
+
+        ErrorHandling.LogAssert(NewCFrame ~= nil, "Compile", "CFrame has invalid arguments",Node.Line)
+
+        return NewCFrame
     end
 
     return
