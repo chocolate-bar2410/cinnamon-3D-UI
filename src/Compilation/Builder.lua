@@ -1,4 +1,5 @@
 local Package = script.Parent.Parent
+local ParseHelper = require(script.Parent.ParseHelper)
 local Lookup = require(Package.Lookup)
 
 local BuildHelper = require(Package.Compilation.BuildHelper)
@@ -15,21 +16,21 @@ local BuildMethods = {}
 BuildMethods.UIContainer = function(Builder : Lookup.BuildHelper,Node)
     local Properties = Node.Properties
 
-    if not ErrorHandling.LogAssert(Properties.UI ~= nil, "Compile", `Containers must have a UI property`) then return end
-    if not ErrorHandling.LogAssert(Properties.ID ~= nil, "Compile", `Containers must have a ID property`) then return end
+    ErrorHandling.LogAssert(Properties.UI ~= nil, "Compile", `Containers must have a UI property`,Node.Line)
+    ErrorHandling.LogAssert(Properties.ID ~= nil, "Compile", `Containers must have a ID property`,Node.Line)
 
     Builder:TraverseTable(Properties)
 
     if Properties.Origin and typeof(Properties.Origin) ~= "CFrame"  then
-        ErrorHandling.LogError("Compile", `Container origin must be a CFrame`) 
+        ErrorHandling.LogError("Compile", `Container origin must be a CFrame`,Node.Line) 
         return
     end
 
     local NewContainer
 
     if Properties.Parent then
-        if not ErrorHandling.LogAssert(Properties.Parent.Type, "Compile", `Parent must be a cinnamon object`) then return end
-        if not ErrorHandling.LogAssert(Properties.Parent.Type == "Container", "Compile", `Parent must be a Container`) then return end 
+        ErrorHandling.LogAssert(Properties.Parent.Type, "Compile", `Parent must be a cinnamon object`,Node.Line) 
+        ErrorHandling.LogAssert(Properties.Parent.Type == "Container", "Compile", `Parent must be a Container`,Node.Line)  
 
         NewContainer = Properties.Parent:NewContainer(Properties.UI, Properties.Origin)
     else
@@ -44,17 +45,17 @@ end
 BuildMethods.element = function(Builder : Lookup.BuildHelper,Node,ContainerObj : Lookup.BaseContainer)
     local Properties = Node.Properties
 
-    if not ErrorHandling.LogAssert(Properties.UI ~= nil, "Compile", `Elements must have a UI property`) then return end
-    if not ErrorHandling.LogAssert(Properties.ID ~= nil, "Compile", `Elements must have a ID property`) then return end
+    ErrorHandling.LogAssert(Properties.UI ~= nil, "Compile", `Elements must have a UI property`,Node.Line)
+    ErrorHandling.LogAssert(Properties.ID ~= nil, "Compile", `Elements must have a ID property`,Node.Line)
 
     Builder:TraverseTable(Properties)
 
     if Properties.Offset and typeof(Properties.Offset) ~= "CFrame" then
-        ErrorHandling.LogError("Compile", "Element offset must be CFrame")
+        ErrorHandling.LogError("Compile", "Element offset must be CFrame",Node.Line)
     end
 
     if Properties.Resolution and typeof(Properties.Resolution) ~= "Vector2" then
-        ErrorHandling.LogError("Compile", "Element offset must be Vector2")
+        ErrorHandling.LogError("Compile", "Element offset must be Vector2",Node.Line)
     end
 
     Properties.Face = Properties.Face and Enum.NormalId[Properties.Face] or nil
@@ -65,7 +66,7 @@ end
 BuildMethods.layout = function(Builder : Lookup.BuildHelper,Node)
     local Properties = Node.Properties
 
-    if not ErrorHandling.LogAssert(Properties.ID ~= nil, "Compile", `Layouts must have a ID property`) then return end
+    ErrorHandling.LogAssert(Properties.ID ~= nil, "Compile", `Layouts must have a ID property`,Node.Line)
 
     ErrorHandling.LogAssert(Properties.Callback ~= nil, "Compile", `Callback is missing from layout`)
 
@@ -80,7 +81,7 @@ end
 
 BuildMethods.animation = function(Builder : Lookup.BuildHelper,Node)
     local Properties = Node.Properties
-    if not ErrorHandling.LogAssert(Properties.ID ~= nil, "Compile", `Animations must have a ID property`) then return end
+    ErrorHandling.LogAssert(Properties.ID ~= nil, "Compile", `Animations must have a ID property`,Node.Line)
     
     local _Instance = Builder:TraverseNode(Properties.Instance)
     local Props = Builder:TraverseNode(Properties.Props)
@@ -93,7 +94,7 @@ end
 
 BuildMethods.batchanimation = function(Builder : Lookup.BuildHelper,Node)
     local Properties = Node.Properties
-    if not ErrorHandling.LogAssert(Properties.ID ~= nil, "Compile", `Animations must have a ID property`) then return end
+    ErrorHandling.LogAssert(Properties.ID ~= nil, "Compile", `Animations must have a ID property`,Node.Line)
     
     local _Instances = Builder:TraverseNode(Properties.Instances)
     local Props = Builder:TraverseNode(Properties.Props)
@@ -106,8 +107,8 @@ end
 BuildMethods.screencontainer = function(Builder : Lookup.BuildHelper,Node)
     local Properties = Node.Properties
 
-    if not ErrorHandling.LogAssert(Properties.UI ~= nil, "Compile", `Containers must have a UI property`) then return end
-    if not ErrorHandling.LogAssert(Properties.ID ~= nil, "Compile", `Containers must have a ID property`) then return end
+    ErrorHandling.LogAssert(Properties.UI ~= nil, "Compile", `Containers must have a UI property`,Node.Line)
+    ErrorHandling.LogAssert(Properties.ID ~= nil, "Compile", `Containers must have a ID property`,Node.Line)
 
     Builder:TraverseTable(Properties)
 
@@ -121,9 +122,9 @@ end
 BuildMethods.timeline = function(Builder : Lookup.BuildHelper,Node)
     local Properties = Node.Properties
 
-    if not ErrorHandling.LogAssert(Properties.ID ~= nil, "Compile", `Timelines must have a ID property`) then return end
-    if not ErrorHandling.LogAssert(Properties.Animation ~= nil, "Compile", `Timeline must have a Animation to attach to`) then return end
-    if not ErrorHandling.LogAssert(Node.TimelineEntries ~= nil, "Compile", `Timeline has no entries`) then return end
+    ErrorHandling.LogAssert(Properties.ID ~= nil, "Compile", `Timelines must have a ID property`,Node.Line)
+    ErrorHandling.LogAssert(Properties.Animation ~= nil, "Compile", `Timeline must have a Animation to attach to`,Node.Line)
+    ErrorHandling.LogAssert(Node.TimelineEntries ~= nil, "Compile", `Timeline has no entries`,Node.Line)
     
     Builder:TraverseTable(Properties)
 
@@ -132,7 +133,7 @@ BuildMethods.timeline = function(Builder : Lookup.BuildHelper,Node)
         local Duration = Builder:TraverseNode(v.Time)
         local Data = Builder:TraverseNode(v.Data)
 
-        if not ErrorHandling.LogAssert(typeof(Data) == "table", "Compile", `Timeline entry must be a table`) then return end
+        ErrorHandling.LogAssert(typeof(Data) == "table", "Compile", `Timeline entry must be a table`,Node.Line)
     
         Data.Time = Duration
         table.insert(Timeline,Data)
@@ -149,7 +150,7 @@ BuildMethods.Call = function(Builder : Lookup.BuildHelper,Node)
     if Name == "ref" then
         local Index = Builder:TraverseNode(Node.Arguments[1])
 
-        ErrorHandling.LogAssert(Builder.Reference[Index], "Compile", `the reference {Index} does not exist`)
+        ErrorHandling.LogAssert(Builder.Reference[Index], "Compile", `the reference {Index} does not exist`,Node.Line)
 
         return Builder.Reference[Index] or nil
     elseif Name == "rad" then
@@ -159,19 +160,30 @@ BuildMethods.Call = function(Builder : Lookup.BuildHelper,Node)
         local Object = Builder:TraverseNode(Node.Arguments[1])
         local Property = Builder:TraverseNode(Node.Arguments[2])
 
-        ErrorHandling.LogAssert(Object, "Compile", `Tried to get the property of a object that does not exist`)
-        ErrorHandling.LogAssert(Object[Property], "Compile", `{Property} is not a valid Property of {tostring(Object)}`)
+        ErrorHandling.LogAssert(Object, "Compile", `Tried to get the property of a object that does not exist`,Node.Line)
+        ErrorHandling.LogAssert(Object[Property], "Compile", `{Property} is not a valid Property of {tostring(Object)}`,Node.Line)
 
         return Object and Object[Property] or nil
     elseif Name == "vec3" then
         local Array = Builder:TraverseNode(Node.Arguments[1])
-        return Vector3.new(table.unpack(Array))
+        local NewVector = Vector3.new(table.unpack(Array))
+
+        ErrorHandling.LogAssert(NewVector ~= nil, "Compile", "Vector3 has invalid arguments",Node.Line)
+        return NewVector
     elseif Name == "vec2" then
         local Array = Builder:TraverseNode(Node.Arguments[1])
-        return Vector2.new(table.unpack(Array))
+        local NewVector = Vector2.new(table.unpack(Array))
+
+        ErrorHandling.LogAssert(NewVector ~= nil, "Compile", "Vector2 has invalid arguments",Node.Line)
+
+        return NewVector
     elseif Name == "cframe" then
         local Array = Builder:TraverseNode(Node.Arguments[1])
-        return CFrame.new(table.unpack(Array))
+        local NewCFrame = CFrame.new(table.unpack(Array))
+
+        ErrorHandling.LogAssert(NewCFrame ~= nil, "Compile", "CFrame has invalid arguments",Node.Line)
+
+        return CFrame
     end
 
     return

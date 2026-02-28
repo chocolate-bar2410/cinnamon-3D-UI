@@ -15,6 +15,7 @@ local ParseStatement = function(Parser : Lookup.ParseHelper)
     if not Token then return end
 
     local Node
+    local Line = Token.Line
     if Token.Type == "STRING" or Token.Type == "IDENTIFIER" or Token.Type == "NUMBER" then
         Node = ParseMethods["Value"](Parser)
     elseif Token.Type == "BLOCK" then
@@ -22,6 +23,8 @@ local ParseStatement = function(Parser : Lookup.ParseHelper)
     elseif ParseMap[Token.Value] then
         Node = ParseMethods[ParseMap[Token.Value]](Parser)
     end
+
+    Node.Line = Line
 
     return Node
 end
