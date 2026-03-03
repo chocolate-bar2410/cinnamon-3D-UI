@@ -11,15 +11,13 @@ local Schema = {}
 
 local Update = function()
 	for _,Container in ScreenContainers do
-		local Original = Container.WorldCFrame
 		Container.WorldCFrame = workspace.CurrentCamera.CFrame:toWorldSpace(CFrame.new(0,0,-Container.DisplayDistance))
 
 		for _,Element in Container.Elements do
 			local AbsoluteSize = Element.UI.AbsoluteSize
-			local ObjectCFrame = Original:ToObjectSpace(Element.Instance.CFrame)
+			local UpdatedPosition = Container:UDim2ToCFrame(Element.UI.Position, AbsoluteSize)
 
-			local Rotation = ObjectCFrame - ObjectCFrame.Position
-			Element.Instance.CFrame = Container:UDim2ToCFrame(Element.UI.Position, AbsoluteSize) * Rotation
+			Element.Instance.CFrame = UpdatedPosition:ToWorldSpace(Element.Offset)
 
 			Element.Instance.Size = Container:GetPartSize(AbsoluteSize)
 		end
