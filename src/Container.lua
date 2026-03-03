@@ -1,4 +1,3 @@
-
 local Package = script.Parent
 
 local Element = require(Package.Element)
@@ -14,6 +13,7 @@ Schema._NewElement = function(self : Lookup.UIContainer,UI : GuiObject,Offset : 
 
 	return Element(self,UI,Offset,Resolution,Face)
 end	
+
 Schema.Element = function(self : Lookup.UIContainer,Props : {
 	UI : GuiObject,
     Offset : CFrame,
@@ -131,8 +131,7 @@ end
 
 Schema._SetOrigin = function(self : Lookup.UIContainer,Origin : CFrame)
 	for _,Element in self.Elements do
-		local ObjectCFrame = self.Origin:ToObjectSpace(Element.Instance.CFrame)
-		Element.Instance.CFrame = Origin:ToWorldSpace(ObjectCFrame)
+		Element.Instance.CFrame = Origin:ToWorldSpace(Element.Offset)
 	end
 	
 	for _,Container in self.Children do

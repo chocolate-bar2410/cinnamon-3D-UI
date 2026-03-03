@@ -39,7 +39,11 @@ end
 
 module.DrawOutline = function(Name,Colour,Target : Lookup.Element)
      if not module.DebugFolder then NewDebugFolder() end
-    if Outlines[Name] then return end
+    if Outlines[Name] then 
+        Outlines[Name].SurfaceColor3 = Colour
+        Outlines[Name].Color3 = Colour
+        return 
+    end
     
     local Outline = Instance.new("SelectionBox",Target.Instance)
     Outline.Color3 = Colour
@@ -50,7 +54,7 @@ module.DrawOutline = function(Name,Colour,Target : Lookup.Element)
     Outline.SurfaceColor3 = Colour
     Outline.SurfaceTransparency = 0.75
 
-    Outlines[Name] = Target
+    Outlines[Name] = Outline
 end
 
 module.DrawLine = function(
@@ -91,7 +95,7 @@ module.DrawLine = function(
 
     Line.Size = Vector3.new(0.05,0.05,Distance)
     Line.CFrame = CFrame.new((Origin.Position + Goal.Position) / 2,Goal.Position)
-    Line.Color = Lines[Name][4]
+    Line.Color = LineColour or Lines[Name][4]
 
     return Line
 end

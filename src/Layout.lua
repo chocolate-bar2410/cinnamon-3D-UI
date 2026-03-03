@@ -8,7 +8,7 @@ local Lookup = require(Package.Lookup)
 module.ApplyLayout = function(Elements : {Lookup.Element},Layout : {CFrame})
 	for i,Element in Elements do
 		if not Layout[i] then continue end
-		Element.Instance.CFrame = Layout[i]
+		Element.Offset = Element.Container.Origin:ToObjectSpace(Layout[i])
 	end
 end
 

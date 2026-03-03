@@ -6,7 +6,7 @@ export type UI3D_Object = {
 	Type : "Container" | "Element" | "ScreenContainer"
 }
 
-type BaseContainer = UI3D_Object & {
+export type BaseContainer = UI3D_Object & {
 	Type : "Container" | "ScreenContainer",
 	UI : ScreenGui,
 	Elements : {Element},
@@ -32,6 +32,10 @@ export type Element = UI3D_Object & {
 	Container : UIContainer,
 	Connections : {RBXScriptConnection},
 	Parent2D : GuiObject,
+
+	Offset : CFrame,
+	Resolution : Vector2,
+	_RevertToEnabled : boolean,
 }
 
 export type UIContainer = BaseContainer & {
@@ -53,6 +57,11 @@ export type ScreenContainer = BaseContainer & {
 	GetPartSize : (ScreenContainer,ViewPortSize : Vector2) -> Vector3,
 }
 
+export type AnimTimeline = {
+	IndexPointer : number,
+	BaseSpeed : number,
+	InitStates : {[string] : any},
+} & {{Time : number} & {[string] : any}}
 
 export type Animatable<T> = {
 	Goal : T,
@@ -67,6 +76,7 @@ export type Animatable<T> = {
 	Time : number,
 	Origin : T,
 	
+	Timeline : AnimTimeline,
 }
 
 export type Tween<T> = Animatable<T> & {
@@ -101,58 +111,24 @@ export type Oscillator<T> = Tween<T> & {
 	WaveForm : WaveForm
 }
 
+export type BatchAnimation<T> = {Animatable<T>} & {
+	SetEnabled : (Enabled : boolean) -> nil,
+	SetGoals : (Goal : {T}) -> nil,
+}
+
 export type WaveForm = (Time : number,Frequency : number,Phase : number) -> number
 
 export type AnimationMethods = {
-	Tween : <T>(
-		_Instance : Instance,
-		Property : string,
-		Goal : T,
-		EasingDirection : string,
-		EasingStyle : string,
-		Speed : number
-	) -> Tween<T>,
-	Spring : <T>(
-		_Instance : Instance,
-		Property : string,
-		Goal : T,
-		Frequency : number,
-		Damping : number,
-		Response : number,
-		Speed : number
-	) -> Spring<T>,
-	Bezier : <T>(
-		_Instance : Instance,
-		Property : string,
-		Goal : T,
-		EasingDirection : string,
-		EasingStyle : string,
-		P1 : T,
-		P2 : T,
-		Speed : number
-	) -> Bezier<T>,
-	Oscillator : <T>(
-		_Instance : Instance,
-		Property : string,
-		Goal : T,
-		Frequency : number,
-		Phase : number,
-		EasingDirection : string,
-		EasingStyle : string,
-		WaveForm : WaveForm,
-		Speed : number
-	) -> Oscillator<T>,
+	Animate : <T>(Instance,AnimationPropertyTable<T>) -> Animatable<T>,
+
 	BatchAnimation : <T>(
 		AnimationType : "Tween" | "Spring" | "Bezier" | "Oscillator",
 		_Instances : {Instance | Element},
 		Props : {Property : string},
-		GroupData : {Goal : {T},P1 : {T},P2 : {T},Phase : {number}}
-		
-	) -> {Animatable<T>} & {
-		SetEnabled : (Enabled : boolean) -> nil,
-		SetGoals : (Goal : {T}) -> nil,
-	},
+		GroupData : {Goal : {T},P1 : {T},P2 : {T},Phase : {number}}	
+	) -> BatchAnimation<T>,
 	
+	AttachTimeline : <T>(Animatable : Animatable<T>,Timeline : {{Time : number} & {[string] : any}}) -> AnimTimeline,
 	
 	
 	SetGoal : <T>(Animated : Animatable<T>,Goal : T) -> nil,
@@ -160,15 +136,62 @@ export type AnimationMethods = {
 
 }
 
-export type BatchAnimationPropertyTable = {
+export type BaseAnimationPropertyTable = {
 	Property : string,
 	EasingDirection : string,
 	EasingStyle : string,
-	Speed : number,
+	Time : number,
 	Frequency : number,
 	Damping : number,
 	Response : number,
 	WaveForm : WaveForm
+}
+
+export type AnimationPropertyTable<T> = BaseAnimationPropertyTable & {
+	Type : "Tween" | "Spring" | "Bezier" | "Oscillator",
+	Goal : T,
+	P1 : T,
+	P2 : T,
+	Phase : number,
+}
+
+export type CompileToken = {
+	Type : string,
+	Value : string | number,
+	Line : number,
+	Column : number,
+}
+
+export type CompileNode = {
+	NodeType : string,
+	Line : number
+}
+
+export type ParseHelper = {
+	Tokens : {CompileToken},
+	Position : number,
+	AST : {Body : {CompileNode},Header : CompileNode},
+	ParseMode : number,
+
+	Advance : (ParseHelper) -> CompileToken,
+	CurrentToken : (ParseHelper) -> CompileToken,
+	CurrentTokenType : (ParseHelper) -> string,
+	CurrentTokenValue : (ParseHelper) -> string | number,
+	Expect : (ParseHelper,string) -> CompileToken?,
+	ExpectType : (ParseHelper,string) -> CompileToken?,
+	GoBack : (ParseHelper) -> CompileToken,
+	LookAhead : (ParseHelper) -> CompileToken,
+}
+
+export type BuildHelper = {
+	AST : {Body : {CompileNode},Header : CompileNode},
+	Reference : {[string] : any},
+	BuildMethods : {},
+	Built : {},
+
+	TraverseBody : (BuildHelper) -> nil,
+	TraverseNode : (BuildHelper,CompileNode,any) -> any,
+	TraverseTable : (BuildHelper,{CompileNode},any) -> {any},
 }
 
 return {
