@@ -21,7 +21,7 @@ Cinnamon is good for:
 and alot more
 
 go to [Tutorial](TUTORIAL.md) to get a very brief rundown of how to use cinnamon.
-go to [Documentation](https://chocolate-bar2410.github.io/cinnamon-3D-UI/intro.html) to get more info on cinnamon.
+go to [Documentation](https://chocolate-bar2410.github.io/cinnamon-3D-UI) to get more info on cinnamon.
 if you want to see more updates feel free to contribute and star the project
 
 # how to install
